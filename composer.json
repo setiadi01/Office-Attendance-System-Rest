@@ -10,7 +10,8 @@
         "laravel/framework": "5.4.*",
         "laravel/passport": "^3.0",
         "laravel/tinker": "~1.0",
-        "zizaco/entrust": "5.2.x-dev"
+        "zizaco/entrust": "5.2.x-dev",
+        "simplesoftwareio/simple-qrcode": "~1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
