@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\System\System;
+use App\Transaction\ApiAuthTransaction;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use Response;
 use Log;
+
 
 /**
  * Digunakan untuk Autentikasi API
@@ -29,7 +31,9 @@ class ApiAuthController extends Controller
         if(Auth::attempt(['username' => request('username'), 'password' => request('password')])){
             $user = Auth::user();
             $role = System::defaultRole($user->user_id);
+            $profilePicture = ApiAuthTransaction::getProfilePicture($user->username);
             $user->role = $role;
+            $user->profile_picture = $profilePicture;
             $token =  $user->createToken('Absensi')->accessToken;
 
             return response()->json([
@@ -43,6 +47,25 @@ class ApiAuthController extends Controller
                 'status' => 'FAIL', 
                 'error' => 'Unauthenticated'
             ]);
+        }
+    }
+
+    /**
+     * Mendapatkan profile picture
+     * @param type $username 
+     * @return String
+     */
+    public function getProfilePicture($username){
+        $pictureName = ApiAuthTransaction::getProfilePicture($username);
+
+        if ($pictureName == null) {
+            return response()->json([
+                'data' => null
+            ]);    
+        }else{        
+            return response()->json([
+                'data' => $pictureName
+            ]);      
         }
     }
 }

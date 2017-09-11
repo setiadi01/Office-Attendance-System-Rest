@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 * @author Setiadi, 12 Agustus 2017
 */
 
-class RoleUserTransaction
+class SystemTransaction
 {
 	
 	public static function roleName($uer_id){

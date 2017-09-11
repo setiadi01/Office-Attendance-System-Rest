@@ -3,7 +3,7 @@
 namespace App\System;
 
 use Illuminate\Support\Facades\Auth;
-use App\Transaction\RoleUserTransaction;
+use App\Transaction\SystemTransaction;
 
 /**
 *  
@@ -25,7 +25,7 @@ class System
 	}
 
 	public static function defaultRole(){
-		return RoleUserTransaction::roleName(Auth::user()->user_id);
+		return SystemTransaction::roleName(Auth::user()->user_id);
 	}
 	
 }
