@@ -1,0 +1,34 @@
+<div class="fixed-top-right">
+<div class="col">
+    <div class="col-md-12 col-sm-12">
+        <h1>{{clock | date:'HH:mm:ss'}}</h1>
+        {{clock | date:'EEEE, dd MMMM'}}
+    </div>
+</div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="middle-box text-center form-login">
+                <div>
+                    <h1 class="logo-name" style="color: white">
+                        LOGIN
+                    </h1>
+                </div>
+                <hr>
+                <form ng-submit="doLogin()" name="login">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Username" name="username" ng-model="username" required="" >
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password" name="password" ng-model="password" required="">
+                    </div>
+                    <div class="alert alert-failed" ng-show="messageError">
+                        <span>{{messageError}}</span>
+                    </div>
+                    <button type="submit" ng-disabled="login.password.$invalid || login.username.$invalid" class="btn btn-primary block" style="width: 50%; margin-top: 20px">LOGIN</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

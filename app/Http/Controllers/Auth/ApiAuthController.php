@@ -20,8 +20,8 @@ class ApiAuthController extends Controller
 {
 
     /**
-     * Digunakan untuk login API, ketika sukses akan mengembalikan response
-     * yang berisi token dan data user yang sedang login
+     * Digunakan untuk absen API, ketika sukses akan mengembalikan response
+     * yang berisi token dan data user yang sedang absen
      * @param Request $request 
      * @return Json
      */

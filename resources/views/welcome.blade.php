@@ -71,7 +71,7 @@
                     @if (Auth::check())
                         <a href="{{ url('/home') }}">Home</a>
                     @else
-                        <a href="{{ url('/login') }}">Login</a>
+                        <a href="{{ url('absen') }}">Login</a>
                         <a href="{{ url('/register') }}">Register</a>
                     @endif
                 </div>
@@ -89,7 +89,14 @@
                     <a href="https://forge.laravel.com">Forge</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div>
+                <div class="visible-print text-center">
+                    {!! QrCode::size(100)->generate('selamat datang'); !!}
+                    <p>Scan me to return to the original page.</p>
+                </div>
+                <img src="data:image/png;base64, {!! base64_encode(QrCode::format('png')->merge('https://maxcdn.icons8.com/Share/icon/color/Gaming//pokecoin1600.png', .2, true)->size(400)->generate('fandy-20170406')); !!} ">
+
             </div>
+
         </div>
     </body>
 </html>

@@ -1,0 +1,46 @@
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  color: #FFEF5A;
+  background-color: #198D99;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  margin-top: 0px;
+}
+
+.body-login{
+	background: rgba(0, 0, 0, 0) url("../img/bg-login1.jpg") no-repeat fixed center center / 100% 100% !important;
+}
+
+.form-login {
+	min-width: 100px;
+	max-width: 300px;
+	margin: 150px auto;
+	background: rgba(0, 0, 0, 0.5) ;
+	border-radius: 10px;
+	border: 1px solid #e3e3e3;
+	padding: 20px;
+	padding-top: 10px;
+}
+
+.fixed-top-right {
+	position: fixed;
+	top: 0;
+	right: 10px;
+	width: 300px;
+	color: #fff;
+	text-align: right;
+}
+
+.alert-failed {
+	background: rgba(150, 0, 0, 0.08);
+	border-color: red;
+	color: red
+}
+
+
+
+
+
