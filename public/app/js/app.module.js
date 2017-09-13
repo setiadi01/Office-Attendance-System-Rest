@@ -2,7 +2,7 @@
 
 	'use strict'
 
-	angular.module('absensiApp', ['ui.router', 'satellizer'])
+	angular.module('absensiApp', ['ui.router', 'satellizer', 'ja.qr'])
 	.config(function($stateProvider, $urlRouterProvider, $authProvider){
 
 		$authProvider.loginUrl = '/api/login';
