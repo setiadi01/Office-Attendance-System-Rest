@@ -10,6 +10,11 @@
 		if (localStorage.getItem('user') == null){
 			$state.go('login');
 		};
+		$scope.date = function() {
+			$scope.theTime = new Date() // get the current time
+			$timeout($scope.date, 1000); // reset the timer
+		}
+		$scope.date();
 
 		$scope.tick = function() {
 			var user = localStorage.getItem('user');
