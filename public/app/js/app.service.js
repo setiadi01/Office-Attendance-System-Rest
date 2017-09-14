@@ -6,7 +6,13 @@
 
 	function AbsensiService($http){
 		return {
-			
+			getUuid : function(){
+				var request = $http({
+					method: "GET",
+					url: "/api/get-qrcode"
+				});
+				return (request);
+			},
 		}
 	}
 })();

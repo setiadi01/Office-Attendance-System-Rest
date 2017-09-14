@@ -14,6 +14,7 @@ class System
 {
 	public static function userLoginId(){
 		return Auth::user()->user_id;
+		\Log.debug(Auth::user());
 	}
 
 	public static function dateTime(){

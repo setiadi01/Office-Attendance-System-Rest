@@ -14,7 +14,10 @@ use Illuminate\Http\Request;
 */
 
 Route::post('login', 'Auth\ApiAuthController@login');
+Route::post('loginWeb', 'Auth\ApiAuthController@loginWeb');
+
 Route::get('get-profie-picture/{username}', 'Auth\ApiAuthController@getProfilePicture');
+Route::get('get-qrcode', 'GenerateQrCodeController@getQrCode');
 
 Route::get('images/{image}', 'FileController@loadImage');
 

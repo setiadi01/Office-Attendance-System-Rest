@@ -5,7 +5,7 @@
 	angular.module('absensiApp', ['ui.router', 'satellizer', 'ja.qr'])
 	.config(function($stateProvider, $urlRouterProvider, $authProvider){
 
-		$authProvider.loginUrl = '/api/login';
+		$authProvider.loginUrl = '/api/loginWeb';
 
 		$stateProvider
 		.state('login', {

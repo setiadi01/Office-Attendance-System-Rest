@@ -11,7 +11,7 @@
         "laravel/passport": "^3.0",
         "laravel/tinker": "~1.0",
         "zizaco/entrust": "5.2.x-dev",
-        "simplesoftwareio/simple-qrcode": "~1"
+        "ramsey/uuid": "^3.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

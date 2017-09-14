@@ -21,7 +21,9 @@
 			.then(function(response) {
 				console.log(response);
 				if (response.data.status == 'OK') {
-					localStorage.setItem('user', response.data.user.username);
+					// localStorage.setItem('user', response.data.user.username);
+					localStorage.setItem('user', JSON.stringify(response.data.user));
+
 					$state.go('home');
 				}else{
 					alert('kombinasi password dan username salah')
