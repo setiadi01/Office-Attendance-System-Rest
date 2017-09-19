@@ -11,13 +11,24 @@ body {
 }
 
 .body-login{
-	background: rgba(0, 0, 0, 0) url("../img/bg-login1.jpg") no-repeat fixed center center / 100% 100% !important;
+		background: rgba(0, 0, 0, 0) url("../img/bg-login1.jpg") no-repeat fixed center center / 100% 100% !important;
 }
 
 .form-login {
 	min-width: 100px;
-	max-width: 300px;
+	max-width: 320px;
 	margin: 150px auto;
+	background: rgba(0, 0, 0, 0.5) ;
+	border-radius: 10px;
+	border: 1px solid #e3e3e3;
+	padding: 20px;
+	padding-top: 10px;
+}
+
+.box-qrcode {
+	min-width: 100px;
+	max-width: 320px;
+	margin: 80px auto;
 	background: rgba(0, 0, 0, 0.5) ;
 	border-radius: 10px;
 	border: 1px solid #e3e3e3;
@@ -27,7 +38,26 @@ body {
 
 .fixed-top-right {
 	position: fixed;
+	top: 5px;
+	right: 0px;
+	width: 300px;
+	color: #fff;
+	text-align: right;
+	z-index: 1;
+}
+
+.fixed-top-left {
+	position: fixed;
 	top: 0;
+	left: 10px;
+	width: 300px;
+	color: #fff;
+	text-align: left;
+}
+
+.fixed-bottom-right {
+	position: fixed;
+	bottom: 0;
 	right: 10px;
 	width: 300px;
 	color: #fff;

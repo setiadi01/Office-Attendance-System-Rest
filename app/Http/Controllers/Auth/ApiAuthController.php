@@ -60,10 +60,7 @@ class ApiAuthController extends Controller
             $user->role = $role;
             $user->profile_picture = $profilePicture;
             $token =  $user->createToken('Absensi')->accessToken;
-            Session::put('user',[
-                "username"          => $user->username,
-                "user_id"           => $user->user_id
-            ]);
+           
             $userId = Session::get('user');
             \Log::debug($userId);
 

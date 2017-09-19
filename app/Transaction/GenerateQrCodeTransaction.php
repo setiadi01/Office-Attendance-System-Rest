@@ -13,14 +13,13 @@ use App\System\System;
 class GenerateQrCodeTransaction
 {
 	
-	public static function getUuid(){
-		$userId = System::userLoginId();
+	public static function getUuid($userId){
 		$getUuid = DB::SELECT("
-			SELECT uuid
-			FROM t_daily_authentication_seq
+			SELECT secure_key
+			FROM t_daily_authentication
 			WHERE user_id = $userId;
 		");
 
-		return $getUuid[0]->uuid;
+		return $getUuid[0]->secure_key;
 	}
 }

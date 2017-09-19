@@ -19,6 +19,7 @@
         <link href="{{URL::asset('css/app.css')}}" rel="stylesheet">
         <link href="{{URL::asset('css/bootstrap.css')}}" rel="stylesheet">
         <link href="{{URL::asset('css/bootstrap.min.css')}}" rel="stylesheet">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <script src="{{ URL::asset('js/jquery-3.1.1.min.js') }}"></script>
         <script src="{{ URL::asset('js/jquery-2.1.1.js') }}"></script>
         <script src="{{ URL::asset('js/qrcode.js') }}"></script>
@@ -36,9 +37,9 @@
         <script src="{{ URL::asset('app/js/login.controller.js') }}"></script>
         <script src="{{ URL::asset('app/js/home.controller.js') }}"></script>
 
-        <script type="text/javascript" src="bower_components/angular/angular.js"></script>
-        <script type="text/javascript" src="bower_components/qrcode/lib/qrcode.min.js"></script>
-        <script type="text/javascript" src="bower_components/angular-qr/angular-qr.min.js"></script>
+        {{--<script type="text/javascript" src="/bower_components/angular/angular.js"></script>--}}
+        {{--<script type="text/javascript" src="/bower_components/qrcode/lib/qrcode.min.js"></script>--}}
+        {{--<script type="text/javascript" src="/bower_components/angular-qr/angular-qr.min.js"></script>--}}
 
     </head>
     <body ng-app="absensiApp" class="body-login">

@@ -19,7 +19,11 @@ class System
 
 	public static function dateTime(){
 		return date('YmdHis', time());
-	} 
+	}
+
+	public static function dateTimeForQrCode(){
+		return date('YmdHi', time());
+	}
 
 	public static function date(){
 		return date('Ymd', time());

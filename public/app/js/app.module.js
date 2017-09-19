@@ -21,6 +21,11 @@
 
 		$urlRouterProvider.otherwise('/login');
 
-	})
+	}).factory('dataModel',dataModel);
+	function dataModel(){
+		return {
+
+		}
+	}
 
 })();

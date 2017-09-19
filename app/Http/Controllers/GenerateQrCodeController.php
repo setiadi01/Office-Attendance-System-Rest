@@ -21,17 +21,17 @@ class GenerateQrCodeController extends Controller
 	 * Mengembalikan data user yang login
 	 * @return Json
 	 */
-    public function getQrCode(){
-		$userId = Session::get('user');
+    public function getQrCode($username, $userId){
 
-		//$userId = System::userLoginId();
-		Log::debug($userId);
-//		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
-//		$now = System::dateTime();
-//		$qrcode = $userId.'_'.$now.'_'.$getUuid;
-//		return response()->json([
-//    		'status' => 'OK',
-//    		'data' => $qrcode
-//    	]);
+		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
+		$now = System::dateTimeForQrCode();
+		$qrcode = $username.'_'.$now.'_'.$getUuid;
+		Log::debug($qrcode);
+		$result = md5(utf8_encode($qrcode));
+		
+		return response()->json([
+    		'status' => 'OK',
+    		'data' => $result
+    	]);
     }
 }
