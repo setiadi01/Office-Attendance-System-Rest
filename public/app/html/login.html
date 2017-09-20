@@ -9,8 +9,12 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="logo">
+
+            </div>
             <div class="middle-box text-center form-login">
                 <div>
+                    <img src="../img/logo.png" width="130">
                     <h1 class="logo-name" style="color: white">
                         LOGIN
                     </h1>
@@ -26,7 +30,8 @@
                     <div class="alert alert-failed" ng-show="messageError">
                         <span>{{messageError}}</span>
                     </div>
-                    <button type="submit" class="btn btn-primary block" style="width: 50%; margin-top: 20px">LOGIN <i class="fa fa-sign-in"></i></button>
+                    <button type="submit" class="btn btn-primary block" ng-show="!loader" style="width: 100%; margin-top: 20px">LOGIN <i class="fa fa-sign-in"></i></button>
+                    <div class="bar" ng-show="loader" style="margin-top: 37px"></div>
                 </form>
             </div>
         </div>
