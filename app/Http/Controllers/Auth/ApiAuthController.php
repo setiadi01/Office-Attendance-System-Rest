@@ -51,6 +51,12 @@ class ApiAuthController extends Controller
         }
     }
 
+    /**
+     * Digunakan untuk absen API, ketika sukses akan mengembalikan response
+     * yang berisi token dan data user yang sedang absen
+     * @param Request $request 
+     * @return Json
+     */
     public function loginWeb(Request $request){
         if(Auth::attempt(['username' => request('username'), 'password' => request('password')])){
             $user = Auth::user();
