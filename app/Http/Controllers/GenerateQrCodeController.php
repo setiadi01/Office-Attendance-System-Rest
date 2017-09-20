@@ -24,14 +24,22 @@ class GenerateQrCodeController extends Controller
     public function getQrCode($username, $userId){
 
 		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
-		$now = System::dateTimeForQrCode();
-		$qrcode = $username.'_'.$now.'_'.$getUuid;
-		Log::debug($qrcode);
-		$result = md5(utf8_encode($qrcode));
-		
-		return response()->json([
-    		'status' => 'OK',
-    		'data' => $result
-    	]);
+		if($getUuid != null){
+			$now = System::dateTimeForQrCode();
+			$qrcode = $username.'_'.$now.'_'.$getUuid;
+			Log::debug($qrcode);
+			$result = md5(utf8_encode($qrcode));
+
+			return response()->json([
+				'status' => 'OK',
+				'data' => $result
+			]);
+		}
+		else{
+			return response()->json([
+				'status' => 'FAIL'
+			]);
+		}
+
     }
 }

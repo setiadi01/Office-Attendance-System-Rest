@@ -67,14 +67,34 @@ class ApiAuthTransaction
 		return null;
 	}
 
-	public static function getUuid(){
-		$userId = System::userLoginId();
-		$getUuid = DB::SELECT("
-			SELECT uuid
-			FROM t_daily_authentication_seq
-			WHERE user_id = $userId;
-		");
-
-		return $getUuid[0]->uuid;
+	public static function checkin($userId, $checkin){
+		$result = DB::table('t_daily_authentication')
+					->where('user_id', $userId)
+					->update([	'auth_key_checkin' 	=> $checkin,
+								'auth_date_checkin' => System::date(),
+								'update_datetime' 	=> System::dateTime()]);
 	}
+
+	public static function checkout($userId, $checkout){
+		$result = DB::table('t_daily_authentication')
+					->where('user_id', $userId)
+					->update([	'auth_key_checkout' 	=> $checkout,
+						'auth_date_checkout' => System::date(),
+						'update_datetime' 	=> System::dateTime()]);
+
+	}
+
+
+//	public static function getUuid(){
+//		$userId = System::userLoginId();
+//		$getUuid = DB::SELECT("
+//			SELECT uuid
+//			FROM t_daily_authentication_seq
+//			WHERE user_id = $userId;
+//		");
+//
+//		return $getUuid[0]->uuid;
+//	}
+
+
 }
