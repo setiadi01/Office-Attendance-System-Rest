@@ -24,7 +24,7 @@
 		input.user_id = currentUser.user_id;
 
 		$scope.generateKey = function() {
-		AbsensiService.getUuid(input)
+		AbsensiService.getQrCode(input)
 			.then(function(response){
 				if(response.data.status == 'OK'){
 					console.log(response);

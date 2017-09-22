@@ -103,46 +103,4 @@ class ApiAuthController extends Controller
         }
     }
 
-    public function checkin(Request $request){
-        $inputData  = $request->all();
-        $username   = $inputData['username'];
-        $userId     = $inputData['userId'];
-        $checkin      = $inputData['checkin'];
-        $generateQrCode = GenerateQrCodeController::getQrCode($username, $userId);
-        if($generateQrCode['status'] == 'OK' && $generateQrCode['data'] == $checkin){
-            $proccesCheckin = ApiAuthTransaction::checkin($username, $userId);
-            return response()->json([
-                'status' => 'OK'
-            ]);
-        }
-        else{
-            return response()->json([
-                'status' => 'FAIL',
-                'error' => 'QrCode Not Equals'
-            ]);
-        }
-
-    }
-
-    public function checkout(Request $request){
-        $inputData  = $request->all();
-        $username   = $inputData['username'];
-        $userId     = $inputData['userId'];
-        $checkout      = $inputData['checkout'];
-        $generateQrCode = GenerateQrCodeTransaction::getQrCode($username, $userId);
-        if($generateQrCode['status'] == 'OK' && $generateQrCode['data'] == $checkout){
-            $proccesCheckout = ApiAuthTransaction::checkout($username, $userId);
-            return response()->json([
-                'status' => 'OK'
-            ]);
-        }
-        else{
-            return response()->json([
-                'status' => 'FAIL',
-                'error' => 'QrCode Not Equals'
-            ]);
-        }
-
-    }
-
 }

@@ -20,6 +20,6 @@ class GenerateQrCodeTransaction
 			WHERE user_id = $userId;
 		");
 
-		return $getUuid[0]->secure_key;
+		return  $getUuid == null ? null : $getUuid[0]->secure_key;
 	}
 }

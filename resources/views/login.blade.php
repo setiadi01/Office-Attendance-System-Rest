@@ -26,6 +26,7 @@
                 {{Session::get('errormsg')}}
             </div>
         @endif
+
         <form class="m-t" role="form" action="{{URL::to('getlogins')}}" method="post">
             <div class="form-group">
                 <input type="text" class="form-control" placeholder="Username" required="" name="txtUser">

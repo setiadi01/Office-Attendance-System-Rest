@@ -17,6 +17,10 @@ class System
 		\Log.debug(Auth::user());
 	}
 
+	public static function userUsername(){
+		return Auth::user()->username;
+	}
+
 	public static function dateTime(){
 		return date('YmdHis', time());
 	}
