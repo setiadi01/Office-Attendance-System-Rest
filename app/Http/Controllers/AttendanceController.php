@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\System\System;
 use App\Transaction\GenerateQrCodeTransaction;
+use App\Transaction\ApiAuthTransaction;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -25,13 +26,12 @@ class AttendanceController extends Controller
 		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
 		if($getUuid != null) {
 			$now = System::dateTimeForQrCode();
-			$qrcode = $username . '_' . $now . '_' . $getUuid;
-			Log::debug($qrcode);
-			$resultQrCode = md5(utf8_encode($qrcode));
+			$qrcode = $username.'_'.$now.'_'.$getUuid;
+			$resultQrCode = md5($qrcode);
 			$checkin = $inputData['checkin'];
 
 			if ($resultQrCode == $checkin) {
-				$proccesCheckin = ApiAuthTransaction::checkin($username, $userId);
+				$proccesCheckin = ApiAuthTransaction::checkin($userId, $checkin);
 				return response()->json([
 					'status' => 'OK'
 				]);

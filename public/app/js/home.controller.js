@@ -29,14 +29,12 @@
 				if(response.data.status == 'OK'){
 					console.log(response);
 					$scope.code = response.data.data.toString();
-					dataModel.qrcode = $scope.code;
 					localStorage.setItem('qrcode', $scope.code);
 				}
 			},function(){
 				alert('Mohon maaf server sedang mengalami gangguan.');
 			});
-			$scope.qrcode = localStorage.getItem('qrcode');
-			console.log($scope.qrcode);
+
 		}
 		$scope.generateKey();
 
@@ -45,15 +43,19 @@
 			if ($scope.newSeconds == 0){
 				$scope.generateKey();
 			}
+			$scope.qrcode = localStorage.getItem('qrcode');
+			console.log($scope.qrcode);
 			$timeout($scope.tick,1000); // reset the barcode
 		}
 		$scope.tick();
 
 		$scope.logout = function() {
-			localStorage.removeItem('user');
-			localStorage.removeItem('qrcode');
-			localStorage.removeItem('satellizer_token');
-			$state.go('login');
+			if (confirm("Are you sure?")) {
+				localStorage.removeItem('user');
+				localStorage.removeItem('qrcode');
+				localStorage.removeItem('satellizer_token');
+				$state.go('login');
+			}
 		}
 	}
 

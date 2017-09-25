@@ -38,6 +38,7 @@ class ApiAuthTransaction
 
 	public static function addAuthLogin(){
 		$userId = System::userLoginId();
+		$now = System::date();
 		$uuid = Uuid::uuid1();
 		$getUserDaily = ApiAuthTransaction::getUserDaily();
 		if ($getUserDaily == null) {
@@ -61,6 +62,7 @@ class ApiAuthTransaction
 		{
 			DB::table('t_daily_authentication')
 				->where('user_id', $userId)
+				->where('generated_date', $now)
 				->update(['secure_key' => $uuid]);
 		}
 
@@ -68,16 +70,20 @@ class ApiAuthTransaction
 	}
 
 	public static function checkin($userId, $checkin){
+		$now = System::date();
 		$result = DB::table('t_daily_authentication')
 					->where('user_id', $userId)
+					->where('generated_date', $now)
 					->update([	'auth_key_checkin' 	=> $checkin,
 								'auth_date_checkin' => System::date(),
 								'update_datetime' 	=> System::dateTime()]);
 	}
 
 	public static function checkout($userId, $checkout){
+		$now = System::date();
 		$result = DB::table('t_daily_authentication')
 					->where('user_id', $userId)
+					->where('generated_date', $now)
 					->update([	'auth_key_checkout' 	=> $checkout,
 						'auth_date_checkout' => System::date(),
 						'update_datetime' 	=> System::dateTime()]);
