@@ -3,6 +3,8 @@
 namespace App\Transaction;
 
 use Illuminate\Support\Facades\DB;
+use App\System\System;
+
 
 /**
 * @author Setiadi, 12 Agustus 2017
@@ -19,5 +21,16 @@ class SystemTransaction
 			->first();
 
 		return $result->name;
+	}
+
+	public static function getStatusAbsen($user_id){
+		$now = System::date();
+		$result = DB::table('at_attendance')
+			->select('status')
+			->where('user_id', $user_id)
+			->where('checkin_datetime', $now)
+			->first();
+
+		return $result == null ? null : $result->status;
 	}
 }

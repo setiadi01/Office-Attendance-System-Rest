@@ -55,16 +55,18 @@ class AttendanceController extends Controller
 		$inputData  = $request->all();
 		$userId = System::userLoginId();
 		$username = System::userUsername();
-
+		\Log::debug($inputData);
 		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
 		if($getUuid != null) {
 			$now = System::dateTimeForQrCode();
 			$qrcode = $username . '_' . $now . '_' . $getUuid;
-			$resultQrCode = md5(utf8_encode($qrcode));
+			$resultQrCode = md5($qrcode);
 			$checkout = $inputData['checkout'];
-
+			\Log::debug("==============");
+			\Log::debug($resultQrCode);
+			\Log::debug($checkout);
 			if ($resultQrCode == $checkout) {
-				$proccesCheckout = ApiAuthTransaction::checkout($username, $userId);
+				$proccesCheckout = ApiAuthTransaction::checkout($userId, $checkout);
 				return response()->json([
 					'status' => 'OK'
 				]);

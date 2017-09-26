@@ -28,8 +28,11 @@
                 </div>
                 <hr>
                 <div style="background-color: white; color: black">
-                    <div style="padding: 5%">
-                        <qr text="qrcode" ></qr>
+                    <div style="padding: 5%" ng-show="qrcode === null">
+                        Loading ....
+                    </div>
+                    <div style="padding: 5%" ng-show="qrcode != null">
+                        <qr text="qrcode" size="220"></qr>
                     </div>
                 </div>
                 <hr>

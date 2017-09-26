@@ -53,6 +53,7 @@ body {
 	width: 300px;
 	color: #fff;
 	text-align: left;
+	z-index: 1;
 }
 
 .fixed-bottom-right {

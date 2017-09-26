@@ -71,23 +71,61 @@ class ApiAuthTransaction
 
 	public static function checkin($userId, $checkin){
 		$now = System::date();
-		$result = DB::table('t_daily_authentication')
+		DB::table('t_daily_authentication')
 					->where('user_id', $userId)
 					->where('generated_date', $now)
 					->update([	'auth_key_checkin' 	=> $checkin,
 								'auth_date_checkin' => System::date(),
-								'update_datetime' 	=> System::dateTime()]);
+								'update_datetime' 	=> System::dateTime(),
+								'version' => DB::raw('version + 1')]);
+
+
+		$result = DB::table('t_daily_authentication')
+			->select('daily_authentication_id')
+			->where('user_id', $userId)
+			->where('generated_date', $now)
+			->first();
+
+		$id = $result->daily_authentication_id;
+
+		DB::table('at_attendance')->insert([
+				'user_id' => $userId,
+				'daily_authentication_id' => $id,
+				'checkin_datetime' => System::date(),
+				'checkout_datetime' => '',
+				'status' => 'I',
+				'version' => 0,
+				'create_datetime' => System::dateTime(),
+				'update_datetime' => System::dateTime(),
+				'create_user_id' => $userId,
+				'update_user_id' => $userId
+		]);
+
 	}
 
 	public static function checkout($userId, $checkout){
 		$now = System::date();
-		$result = DB::table('t_daily_authentication')
+		DB::table('t_daily_authentication')
 					->where('user_id', $userId)
 					->where('generated_date', $now)
 					->update([	'auth_key_checkout' 	=> $checkout,
 						'auth_date_checkout' => System::date(),
-						'update_datetime' 	=> System::dateTime()]);
+						'update_datetime' 	=> System::dateTime(),
+						'version' => DB::raw('version + 1') ]);
 
+		$id = DB::table('t_daily_authentication')
+			->select('daily_authentication_id')
+			->where('user_id', $userId)
+			->where('generated_date', $now)
+			->first();
+
+		DB::table('at_attendance')
+			->where('user_id', $userId)
+			->where('checkin_datetime', $now)
+			->update([	'checkout_datetime' 	=> $now,
+						'status' => 'O',
+						'update_datetime' 	=> System::dateTime(),
+						'version' => DB::raw('version + 1') ]);
 	}
 
 
