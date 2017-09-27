@@ -11,26 +11,24 @@ use App\Transaction\SystemTransaction;
  * @author  Setiadi, 20 Agustus 2017
  */
 
-class ExampleController extends Controller
+class LoggedController extends Controller
 {
 	/**
 	 * Mengembalikan data user yang login
 	 * @return Json
 	 */
     public function getLoggedUser(){
+
+        $userId = System::userLoginId();
+        $username = System::userUsername();
+        $getStatus = SystemTransaction::getStatusAbsen($userId);
+
+        $data = Auth::user();
+        $data["checkStatus"] = $getStatus;
+
     	return response()->json([
     		'status' => 'OK',
-    		'data' => Auth::user()
+    		'data' => $data
     	]);
     }
-
-	public function getStatusAbsen(){
-		$userId = System::userLoginId();
-		$username = System::userUsername();
-		$getStatus = SystemTransaction::getStatusAbsen($userId);
-		return response()->json([
-			'status' => 'OK',
-			'data' => $getStatus
-		]);
-	}
 }
