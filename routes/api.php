@@ -24,8 +24,7 @@ Route::get('images/{image}', 'FileController@loadImage');
 
 Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], function(){	
 
-	Route::get('get-logged-user', 'ExampleController@getLoggedUser');
-	Route::get('get-status-absen', 'ExampleController@getStatusAbsen');
+	Route::get('get-logged-user', 'LoggedController@getLoggedUser');
 	Route::post('checkin', 'AttendanceController@checkin');
 	Route::post('checkout', 'AttendanceController@checkout');
 
