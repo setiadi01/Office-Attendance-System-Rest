@@ -37,11 +37,18 @@ class ApiAuthController extends Controller
             $profilePicture = ApiAuthTransaction::getProfilePicture($user->username);
             $user->role = $role;
             $user->profile_picture = $profilePicture;
+
+            // mengembalikan data yang diperlukan saja
+            $data['username'] = $user->username;
+            $data['full_name'] = $user->full_name;
+            $data['role'] = $user->role;
+            $data['profile_picture'] = $user->profile_picture==null?'':$user->profile_picture;
+
             $token =  $user->createToken('Absensi')->accessToken;
             return response()->json([
                 'status' => 'OK', 
                 'token' => $token,
-                'user' => $user
+                'user' => $data
             ]);
         }
         else{

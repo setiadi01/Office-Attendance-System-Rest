@@ -20,10 +20,15 @@ class LoggedController extends Controller
     public function getLoggedUser(){
 
         $userId = System::userLoginId();
+        $role = System::defaultRole($userId);
         $username = System::userUsername();
         $getStatus = SystemTransaction::getStatusAbsen($userId);
 
-        $data = Auth::user();
+        $user = Auth::user();
+        $data['username'] = $user->username;
+        $data['full_name'] = $user->full_name;
+        $data['role'] = $role;
+        $data['profile_picture'] = $user->profile_picture==null?'':$user->profile_picture;
         $data["checkStatus"] = $getStatus;
 
     	return response()->json([

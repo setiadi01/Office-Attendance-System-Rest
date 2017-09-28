@@ -14,7 +14,7 @@ class CreateMPersonProfile extends Migration
     public function up()
     {
         Schema::create('m_person_profile', function (Blueprint $table) {
-            $table->increments('person_profile_id');
+            $table->increments('person_id');
             $table->string('prefix_title');
             $table->string('name');
             $table->string('sufix_title');

@@ -22,9 +22,12 @@ Route::get('get-qrcode/{username}/{userId}', 'GenerateQrCodeController@getQrCode
 
 Route::get('images/{image}', 'FileController@loadImage');
 
-Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], function(){	
+Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], function(){
 
-	Route::get('get-logged-user', 'LoggedController@getLoggedUser');
+    Route::get('get-logged-user', 'LoggedController@getLoggedUser');
+    Route::get('get-info-edit-profile', 'EditProfileController@getUser');
+    Route::get('check-username', 'EditProfileController@checkUsername');
+    Route::post('edit-profile', 'EditProfileController@editProfile');
 	Route::post('checkin', 'AttendanceController@checkin');
 	Route::post('checkout', 'AttendanceController@checkout');
 
