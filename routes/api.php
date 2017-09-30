@@ -31,8 +31,8 @@ Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], functio
 	Route::post('checkout', 'AttendanceController@checkout');
 	Route::post('get-report-absen', 'AttendanceController@getReportAbsen');
 	Route::get('get-summary-weekly', 'AttendanceController@getSummaryWeekly');
-    Route::post('change-password', 'AttendanceController@changePassword');
-    
+    Route::post('change-password', 'ChangePasswordController@changePassword');
+
 
 
 });
