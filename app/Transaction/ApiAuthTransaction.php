@@ -147,7 +147,7 @@ class ApiAuthTransaction
 
 	}
 
-	public static function getSummeryReport($input){
+	public static function getSummaryReport($input){
 		$startDate = $input['startDate'];
 		$endDate = $input['endDate'];
 		$userId = $input['userId'];
@@ -196,24 +196,5 @@ class ApiAuthTransaction
 
 		return $monday[0]->monday_date;
 	}
-
-//	public static function getSummeryWeekly($userId, $startDate, $endDate){
-//		$lateToCheckIn  = DB::select("SELECT count(*)  FROM at_attendance A
-//								WHERE A.user_id = $userId
-//								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
-//								AND SUBSTRING(A.checkin_datetime,9,4) > '0820'");
-//
-//		$workingHours  = DB::select("SELECT SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))) AS working_hours
-//								FROM at_attendance A
-//								WHERE A.user_id = $userId
-//								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'");
-//
-//
-//		return [
-//			"lateToCheckIn" => $lateToCheckIn,
-//			"workingHours" => $workingHours
-//		];
-//
-//	}
 
 }

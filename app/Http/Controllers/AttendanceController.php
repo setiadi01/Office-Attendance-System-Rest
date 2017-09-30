@@ -116,7 +116,7 @@ class AttendanceController extends Controller
 
 	}
 
-	public function getSummeryWeekly(){
+	public function getSummaryWeekly(){
 		$userId = System::userLoginId();
 		$dateNow = System::date();
 		$startDate = ApiAuthTransaction::getThisWeekMondayDate();
@@ -128,7 +128,7 @@ class AttendanceController extends Controller
 		];
 
 
-		$getSummeryReport = ApiAuthTransaction::getSummeryReport($input);
+		$getSummeryReport = ApiAuthTransaction::getSummaryReport($input);
 
 		return response()->json([
 			'status' => 'OK',
