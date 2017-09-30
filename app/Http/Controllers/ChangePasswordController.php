@@ -17,17 +17,26 @@ class ChangePasswordController extends Controller
 
         $userId = System::userLoginId();
         $inputData = $request->all();
-        $password = $inputData['password'];
-        if (strlen($password >= 6)){
+        $newPassword = $inputData['newPassword'];
+        $currentPassword = $inputData['currentPassword'];
+        if (strlen($newPassword >= 6)){
             $input =[
-                'password' => $password,
+                'new_password' => $newPassword,
+                'current_password' => $currentPassword,
                 'userId' => $userId
             ];
             $changePassword = ChangePasswordTransaction::changePassword($input);
-
-            return response()->json([
-                'status' => 'OK'
-            ]);
+            if($changePassword == true){
+                return response()->json([
+                    'status' => 'OK'
+                ]);
+            }
+            else{
+                return response()->json([
+                    'status' => 'FAIL',
+                    'message' => 'Current Password Invalid'
+                ]);
+            }
         }
         else{
             return response()->json([
