@@ -29,7 +29,7 @@ Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], functio
     Route::post('edit-profile', 'EditProfileController@editProfile');
 	Route::post('checkin', 'AttendanceController@checkin');
 	Route::post('checkout', 'AttendanceController@checkout');
-	Route::post('get-report-absen', 'AttendanceController@getReportAbsen');
+	Route::get('get-report-absen', 'AttendanceController@getReportAbsen');
 	Route::get('get-summary-weekly', 'AttendanceController@getSummaryWeekly');
     Route::post('change-password', 'ChangePasswordController@changePassword');
 
