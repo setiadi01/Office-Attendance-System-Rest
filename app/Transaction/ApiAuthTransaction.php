@@ -152,7 +152,7 @@ class ApiAuthTransaction
 		$endDate = $input['endDate'];
 		$userId = $input['userId'];
 
-		$notCheckIn  = DB::select("SELECT count(*) FROM dt_date A
+		$notCheckIn  = DB::select("SELECT count(*) AS not_checkin FROM dt_date A
 						WHERE NOT EXISTS 
 							(SELECT 1 FROM at_attendance B 
 							WHERE A.string_date = SUBSTRING(B.checkin_datetime,1,8) AND B.user_id=$userId
@@ -160,12 +160,12 @@ class ApiAuthTransaction
 						AND 
 						A.string_date between '$startDate' AND '$endDate'");
 
-		$checkIn  = DB::select("SELECT count(*) FROM at_attendance A
+		$checkIn  = DB::select("SELECT count(*) AS checkin FROM at_attendance A
  							  INNER JOIN t_daily_authentication B ON A.daily_authentication_id = B.daily_authentication_id
                               WHERE B.user_id = $userId 
                               AND B.auth_date_checkin BETWEEN '$startDate' AND '$endDate'");
 
-		$lateToCheckIn  = DB::select("SELECT count(*)  FROM at_attendance A
+		$lateToCheckIn  = DB::select("SELECT count(*) AS late_to_checkin  FROM at_attendance A
 								WHERE A.user_id = $userId 
 								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
 								AND SUBSTRING(A.checkin_datetime,9,4) > '0820'");
@@ -175,17 +175,17 @@ class ApiAuthTransaction
 								WHERE A.user_id = $userId
 								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'");
 
-		$bestCheckIn = DB::select("SELECT to_char(to_timestamp(MIN(SUBSTRING(A.checkin_datetime,9,4)), 'HH24MI'), 'HH24:MI')
+		$bestCheckIn = DB::select("SELECT to_char(to_timestamp(MIN(SUBSTRING(A.checkin_datetime,9,4)), 'HH24MI'), 'HH24:MI') AS best_checkin
 									FROM at_attendance A
 									WHERE A.user_id = $userId
 									AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate' ");
 
 		return [
-			"checkIn" => $checkIn,
-			"notCheckIn" => $notCheckIn,
-			"lateToCheckIn" => $lateToCheckIn,
-			"workingHours" => $workingHours,
-			"bestCheckIn" => $bestCheckIn
+			"checkIn" => $checkIn[0]->checkin,
+			"notCheckIn" => $notCheckIn[0]->not_checkin,
+			"lateToCheckIn" => $lateToCheckIn[0]->late_to_checkin,
+			"workingHours" => $workingHours[0]->working_hours,
+			"bestCheckIn" => $bestCheckIn[0]->best_checkin
 		];
 
 	}
