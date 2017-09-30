@@ -116,7 +116,7 @@ class AttendanceController extends Controller
 
 	}
 
-	public function getSummeryWeekly(Request $request){
+	public function getSummeryWeekly(){
 		$userId = System::userLoginId();
 		$dateNow = System::date();
 		$startDate = ApiAuthTransaction::getThisWeekMondayDate();
