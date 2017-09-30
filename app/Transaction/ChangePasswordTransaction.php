@@ -19,7 +19,7 @@ class ChangePasswordTransaction
 
         DB::table('t_user')
             ->where('user_id', $userId)
-            ->update([	'password' => $password,
+            ->update([	'password' => bcrypt($password),
                 'update_datetime' => System::dateTime(),
                 'version' => DB::raw('version + 1')]);
     }
