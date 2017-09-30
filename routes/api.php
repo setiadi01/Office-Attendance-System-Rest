@@ -19,7 +19,7 @@ Route::post('loginWeb', 'Auth\ApiAuthController@loginWeb');
 Route::get('get-profie-picture/{username}', 'Auth\ApiAuthController@getProfilePicture');
 Route::get('get-qrcode/{username}/{userId}', 'GenerateQrCodeController@getQrCode');
 
-Route::get('changepassword/{userId}/{password}', 'AttendanceController@updatePassword');
+Route::post('changePassword', 'AttendanceController@changePassword');
 
 Route::get('images/{image}', 'FileController@loadImage');
 
