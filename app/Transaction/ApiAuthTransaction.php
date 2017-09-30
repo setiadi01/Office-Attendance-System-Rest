@@ -91,7 +91,7 @@ class ApiAuthTransaction
 		DB::table('at_attendance')->insert([
 				'user_id' => $userId,
 				'daily_authentication_id' => $id,
-				'checkin_datetime' => System::date(),
+				'checkin_datetime' => System::dateTime(),
 				'checkout_datetime' => '',
 				'status' => 'I',
 				'version' => 0,
@@ -122,23 +122,98 @@ class ApiAuthTransaction
 		DB::table('at_attendance')
 			->where('user_id', $userId)
 			->where('checkin_datetime', $now)
-			->update([	'checkout_datetime' 	=> $now,
+			->update([	'checkout_datetime' 	=> System::dateTime(),
 						'status' => 'O',
 						'update_datetime' 	=> System::dateTime(),
 						'version' => DB::raw('version + 1') ]);
 	}
 
+	public static function getReportList($input){
+		$startDate = $input['startDate'];
+		$endDate = $input['endDate'];
+		$userId = $input['userId'];
+		$limit = $input['limit'];
+		$offset = $input['offset'];
 
-//	public static function getUuid(){
-//		$userId = System::userLoginId();
-//		$getUuid = DB::SELECT("
-//			SELECT uuid
-//			FROM t_daily_authentication_seq
-//			WHERE user_id = $userId;
-//		");
+		$list  = DB::select("SELECT A.daily_authentication_id, A.checkin_datetime, A.checkout_datetime FROM at_attendance A
+ 							  WHERE A.user_id = $userId 
+                              AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+                              limit $limit offset $offset");
+
+		return [
+			"reportList" => $list
+		];
+
+
+	}
+
+	public static function getSummeryReport($input){
+		$startDate = $input['startDate'];
+		$endDate = $input['endDate'];
+		$userId = $input['userId'];
+
+		$notCheckIn  = DB::select("SELECT count(*) FROM dt_date A
+						WHERE NOT EXISTS 
+							(SELECT 1 FROM at_attendance B 
+							WHERE A.string_date = SUBSTRING(B.checkin_datetime,1,8) AND B.user_id=$userId
+							)
+						AND 
+						A.string_date between '$startDate' AND '$endDate'");
+
+		$checkIn  = DB::select("SELECT count(*) FROM at_attendance A
+ 							  INNER JOIN t_daily_authentication B ON A.daily_authentication_id = B.daily_authentication_id
+                              WHERE B.user_id = $userId 
+                              AND B.auth_date_checkin BETWEEN '$startDate' AND '$endDate'");
+
+		$lateToCheckIn  = DB::select("SELECT count(*)  FROM at_attendance A
+								WHERE A.user_id = $userId 
+								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+								AND SUBSTRING(A.checkin_datetime,9,4) > '0820'");
+
+		$workingHours  = DB::select("SELECT SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))) AS working_hours		
+								FROM at_attendance A
+								WHERE A.user_id = $userId
+								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'");
+
+		$bestCheckIn = DB::select("SELECT to_char(to_timestamp(MIN(SUBSTRING(A.checkin_datetime,9,4)), 'HH24MI'), 'HH24:MI')
+									FROM at_attendance A
+									WHERE A.user_id = $userId
+									AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate' ");
+
+		return [
+			"checkIn" => $checkIn,
+			"notCheckIn" => $notCheckIn,
+			"lateToCheckIn" => $lateToCheckIn,
+			"workingHours" => $workingHours,
+			"bestCheckIn" => $bestCheckIn
+		];
+
+	}
+
+	public static function getThisWeekMondayDate()
+	{
+		$monday = DB::select("SELECT to_char(date_trunc('week', current_date), 'YYYYMMDD') AS monday_date");
+
+		return $monday[0]->monday_date;
+	}
+
+//	public static function getSummeryWeekly($userId, $startDate, $endDate){
+//		$lateToCheckIn  = DB::select("SELECT count(*)  FROM at_attendance A
+//								WHERE A.user_id = $userId
+//								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+//								AND SUBSTRING(A.checkin_datetime,9,4) > '0820'");
 //
-//		return $getUuid[0]->uuid;
+//		$workingHours  = DB::select("SELECT SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))) AS working_hours
+//								FROM at_attendance A
+//								WHERE A.user_id = $userId
+//								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'");
+//
+//
+//		return [
+//			"lateToCheckIn" => $lateToCheckIn,
+//			"workingHours" => $workingHours
+//		];
+//
 //	}
-
 
 }

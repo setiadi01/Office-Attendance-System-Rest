@@ -28,7 +28,7 @@ body {
 .box-qrcode {
 	min-width: 100px;
 	max-width: 320px;
-	margin: 80px auto;
+	margin: 150px auto;
 	background: rgba(0, 0, 0, 0.5) ;
 	border-radius: 10px;
 	border: 1px solid #e3e3e3;

@@ -84,4 +84,59 @@ class AttendanceController extends Controller
 			]);
 		}
 	}
+
+	public function getReportAbsen(Request $request){
+		$inputData  = $request->all();
+
+		$startDate = $inputData['start_date'];
+		$endDate = $inputData['end_date'];
+		$userId  = $inputData['user_id'];
+		$limit  = $inputData['limit'];
+		$offset  = $inputData['offset'];
+
+		$input =[
+			'startDate' => $startDate,
+			'endDate' => $endDate,
+			'userId' => $userId,
+			'limit' => $limit,
+			'offset' => $offset
+		];
+
+		$getReportList = ApiAuthTransaction::getReportList($input);
+		$getSummeryReport = ApiAuthTransaction::getSummeryReport($input);
+
+		return response()->json([
+			'status' => 'OK',
+			'reportList' => $getReportList['reportList'],
+			'notCheckIn' => $getSummeryReport['notCheckIn'],
+			'checkIn' => $getSummeryReport['checkIn'],
+			'lateToCheckIn' => $getSummeryReport['lateToCheckIn'],
+			'workingHours' => $getSummeryReport['workingHours']
+		]);
+
+	}
+
+	public function getSummeryWeekly(Request $request){
+		$userId = System::userLoginId();
+		$dateNow = System::date();
+		$startDate = ApiAuthTransaction::getThisWeekMondayDate();
+
+		$input =[
+			'startDate' => $startDate,
+			'endDate' => $dateNow,
+			'userId' => $userId
+		];
+
+
+		$getSummeryReport = ApiAuthTransaction::getSummeryReport($input);
+
+		return response()->json([
+			'status' => 'OK',
+			'lateToCheckIn' => $getSummeryReport['lateToCheckIn'],
+			'workingHours' => $getSummeryReport['workingHours'],
+			'bestCheckIn' => $getSummeryReport['bestCheckIn']
+		]);
+
+	}
+
 }
