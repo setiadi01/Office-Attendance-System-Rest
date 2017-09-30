@@ -19,8 +19,6 @@ Route::post('loginWeb', 'Auth\ApiAuthController@loginWeb');
 Route::get('get-profie-picture/{username}', 'Auth\ApiAuthController@getProfilePicture');
 Route::get('get-qrcode/{username}/{userId}', 'GenerateQrCodeController@getQrCode');
 
-Route::post('changePassword', 'AttendanceController@changePassword');
-
 Route::get('images/{image}', 'FileController@loadImage');
 
 Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], function(){
@@ -33,6 +31,8 @@ Route::group(['middleware' => ['auth:api', 'role:supervisor|employee']], functio
 	Route::post('checkout', 'AttendanceController@checkout');
 	Route::post('get-report-absen', 'AttendanceController@getReportAbsen');
 	Route::get('get-summary-weekly', 'AttendanceController@getSummaryWeekly');
+    Route::post('change-password', 'AttendanceController@changePassword');
+    
 
 
 });
