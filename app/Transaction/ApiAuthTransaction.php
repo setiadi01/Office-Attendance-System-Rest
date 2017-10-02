@@ -121,7 +121,7 @@ class ApiAuthTransaction
 
 		DB::table('at_attendance')
 			->where('user_id', $userId)
-			->where('checkin_datetime', $now)
+			->where('checkin_datetime', System::dateTime())
 			->update([	'checkout_datetime' 	=> System::dateTime(),
 						'status' => 'O',
 						'update_datetime' 	=> System::dateTime(),
