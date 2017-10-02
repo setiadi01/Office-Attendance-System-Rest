@@ -16,26 +16,28 @@ class ChangePasswordTransaction
     public static function changePassword($input){
         $userId = $input['userId'];
         $newPassword = bcrypt($input['new_password']);
+
+        $update = DB::table('t_user')
+            ->where('user_id', $userId)
+            ->update([	'password' => $newPassword,
+                'update_datetime' => System::dateTime(),
+                'version' => DB::raw('version + 1')]);
+
+        return $update;
+
+    }
+
+    public static function valCurrentPassword($input){
+        $userId = $input['userId'];
         $currentPassword = bcrypt($input['current_password']);
+        $userPassword  = DB::table('t_user')
+            ->select('password')
+            ->where('user_id', $userId)
+            ->first();
 
-        $lateToCheckIn  = DB::select("SELECT count(*) AS user FROM t_user A
-								WHERE A.user_id = $userId 
-								AND password = '$currentPassword'");
+        $result = password_verify($input['current_password'],$userPassword->password);
 
-        if($lateToCheckIn[0]->user > 0){
-            DB::table('t_user')
-                ->where('user_id', $userId)
-                ->update([	'password' => $newPassword,
-                    'update_datetime' => System::dateTime(),
-                    'version' => DB::raw('version + 1')]);
-            $update = true;
-            return $update;
-        }
-        else{
-            $update = false;
-            return $update;
-        }
-
+        return $result==null||$result==''?0:$result;
 
     }
 

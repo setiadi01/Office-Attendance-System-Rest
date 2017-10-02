@@ -33,4 +33,20 @@ class SystemTransaction
 
 		return $result == null ? null : $result->status;
 	}
+
+    public static function getThisWeekMondayDate()
+    {
+        $monday = DB::select("SELECT to_char(date_trunc('week', current_date), 'YYYYMMDD') AS monday_date");
+
+        return $monday[0]->monday_date;
+    }
+
+    public static function getUserIdByUsername($username){
+        $result = DB::table('t_user')
+            ->select('user_id')
+            ->where('username', $username)
+            ->first();
+
+        return $result->user_id;
+    }
 }

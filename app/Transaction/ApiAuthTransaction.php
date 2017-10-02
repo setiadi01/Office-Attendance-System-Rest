@@ -135,10 +135,17 @@ class ApiAuthTransaction
 		$limit = $input['limit'];
 		$offset = $input['offset'];
 
-		$list  = DB::select("SELECT A.daily_authentication_id, A.checkin_datetime, A.checkout_datetime FROM at_attendance A
- 							  WHERE A.user_id = $userId 
-                              AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
-                              limit $limit offset $offset");
+		$list  = DB::select("SELECT B.full_name, to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'FMDay') checkin_day, 
+                                to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'DD') checkin_date, 
+                                to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'FMMonth') checkin_month, 
+                                to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'HH24.MI') checkin_hours, 
+                                to_char(to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS'), 'HH24.MI') checkout_hours
+                                FROM at_attendance A
+                                INNER JOIN t_user B ON A.user_id = B.user_id
+                                WHERE A.user_id = $userId 
+                                AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+                                limit $limit offset $offset
+                            ");
 
 		return [
 			"reportList" => $list
@@ -153,48 +160,46 @@ class ApiAuthTransaction
 		$userId = $input['userId'];
 
 		$notCheckIn  = DB::select("SELECT count(*) AS not_checkin FROM dt_date A
-						WHERE NOT EXISTS 
-							(SELECT 1 FROM at_attendance B 
-							WHERE A.string_date = SUBSTRING(B.checkin_datetime,1,8) AND B.user_id=$userId
-							)
-						AND 
-						A.string_date between '$startDate' AND '$endDate'");
+                                    WHERE NOT EXISTS 
+                                        (SELECT 1 FROM at_attendance B 
+                                          WHERE A.string_date = SUBSTRING(B.checkin_datetime,1,8) 
+                                          AND B.user_id=$userId
+                                        )
+                                    AND A.string_date between '$startDate' AND '$endDate'
+						        ");
 
 		$checkIn  = DB::select("SELECT count(*) AS checkin FROM at_attendance A
- 							  INNER JOIN t_daily_authentication B ON A.daily_authentication_id = B.daily_authentication_id
-                              WHERE B.user_id = $userId 
-                              AND B.auth_date_checkin BETWEEN '$startDate' AND '$endDate'");
+                                  INNER JOIN t_daily_authentication B ON A.daily_authentication_id = B.daily_authentication_id
+                                  WHERE B.user_id = $userId 
+                                  AND B.auth_date_checkin BETWEEN '$startDate' AND '$endDate'
+                              ");
 
 		$lateToCheckIn  = DB::select("SELECT count(*) AS late_to_checkin  FROM at_attendance A
-								WHERE A.user_id = $userId 
-								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
-								AND SUBSTRING(A.checkin_datetime,9,4) > '0820'");
+                                        WHERE A.user_id = $userId 
+                                        AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+                                        AND SUBSTRING(A.checkin_datetime,9,4) > '0820'
+								    ");
 
-		$workingHours  = DB::select("SELECT SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))) AS working_hours		
-								FROM at_attendance A
-								WHERE A.user_id = $userId
-								AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'");
+		$workingHours  = DB::select("SELECT COALESCE(SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))), 0) AS working_hours		
+                                        FROM at_attendance A
+                                        WHERE A.user_id = $userId
+                                        AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+							        ");
 
 		$bestCheckIn = DB::select("SELECT to_char(to_timestamp(MIN(SUBSTRING(A.checkin_datetime,9,4)), 'HH24MI'), 'HH24:MI') AS best_checkin
 									FROM at_attendance A
 									WHERE A.user_id = $userId
-									AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate' ");
+									AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate' 
+								  ");
 
 		return [
 			"checkIn" => $checkIn[0]->checkin,
 			"notCheckIn" => $notCheckIn[0]->not_checkin,
 			"lateToCheckIn" => $lateToCheckIn[0]->late_to_checkin,
 			"workingHours" => $workingHours[0]->working_hours,
-			"bestCheckIn" => $bestCheckIn[0]->best_checkin
+			"bestCheckIn" => $bestCheckIn[0]->best_checkin==''?'-':$bestCheckIn[0]->best_checkin
 		];
 
-	}
-
-	public static function getThisWeekMondayDate()
-	{
-		$monday = DB::select("SELECT to_char(date_trunc('week', current_date), 'YYYYMMDD') AS monday_date");
-
-		return $monday[0]->monday_date;
 	}
 
 }

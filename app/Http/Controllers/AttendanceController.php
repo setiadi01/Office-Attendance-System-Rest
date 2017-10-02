@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\System\System;
 use App\Transaction\GenerateQrCodeTransaction;
 use App\Transaction\ApiAuthTransaction;
+use App\Transaction\SystemTransaction;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -55,16 +56,12 @@ class AttendanceController extends Controller
 		$inputData  = $request->all();
 		$userId = System::userLoginId();
 		$username = System::userUsername();
-		\Log::debug($inputData);
 		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
 		if($getUuid != null) {
 			$now = System::dateTimeForQrCode();
 			$qrcode = $username . '_' . $now . '_' . $getUuid;
 			$resultQrCode = md5($qrcode);
 			$checkout = $inputData['checkout'];
-			\Log::debug("==============");
-			\Log::debug($resultQrCode);
-			\Log::debug($checkout);
 			if ($resultQrCode == $checkout) {
 				$proccesCheckout = ApiAuthTransaction::checkout($userId, $checkout);
 				return response()->json([
@@ -88,11 +85,13 @@ class AttendanceController extends Controller
 	public function getReportAbsen(Request $request){
 		$inputData  = $request->all();
 
-		$startDate = $inputData['start_date'];
-		$endDate = $inputData['end_date'];
-		$userId  = $inputData['user_id'];
+		$startDate = $inputData['startDate'];
+		$endDate = $inputData['endDate'];
+        $username  = $inputData['username'];
 		$limit  = $inputData['limit'];
 		$offset  = $inputData['offset'];
+
+        $userId = SystemTransaction::getUserIdByUsername($username);
 
 		$input =[
 			'startDate' => $startDate,
@@ -103,7 +102,9 @@ class AttendanceController extends Controller
 		];
 
 		$getReportList = ApiAuthTransaction::getReportList($input);
-		$getSummeryReport = ApiAuthTransaction::getSummeryReport($input);
+		$getSummeryReport = ApiAuthTransaction::getSummaryReport($input);
+
+        \Log::debug($input);
 
 		return response()->json([
 			'status' => 'OK',
@@ -117,14 +118,14 @@ class AttendanceController extends Controller
 	}
 
 	public function getSummaryWeekly(){
-		$userId = System::userLoginId();
+        $userId = System::userLoginId();
 		$dateNow = System::date();
-		$startDate = ApiAuthTransaction::getThisWeekMondayDate();
+		$startDate = SystemTransaction::getThisWeekMondayDate();
 
 		$input =[
 			'startDate' => $startDate,
 			'endDate' => $dateNow,
-			'userId' => $userId
+            'userId' => $userId
 		];
 
 
