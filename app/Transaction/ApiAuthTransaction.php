@@ -122,7 +122,7 @@ class ApiAuthTransaction
 		DB::table('at_attendance')
 			->where('user_id', $userId)
 			->where('checkin_datetime', $now)
-			->update([	'checkout_datetime' 	=> System::dateTime(),
+			->update([	'checkout_datetime'	=> System::dateTime(),
 						'status' => 'O',
 						'update_datetime' 	=> System::dateTime(),
 						'version' => DB::raw('version + 1') ]);
@@ -144,6 +144,7 @@ class ApiAuthTransaction
                                 INNER JOIN t_user B ON A.user_id = B.user_id
                                 WHERE A.user_id = $userId 
                                 AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+                                ORDER BY A.checkin_datetime DESC  
                                 limit $limit offset $offset
                             ");
 
