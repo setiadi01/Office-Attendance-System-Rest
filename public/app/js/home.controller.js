@@ -5,22 +5,22 @@
 	.controller('HomeCtrl', HomeCtrl);
 
 	function HomeCtrl($scope, $auth, $state, $interval, $timeout, AbsensiService, dataModel){
+		if(localStorage.lastActive){
+			var lastActive = new Date(localStorage.getItem('lastActive'));
+			var tmp = $scope.theTime - lastActive;
+			tmp = Math.floor(((tmp/1000) - (tmp % 60))/60);
+			var totMin = tmp % 60;
 
-		$scope.theTime = new Date();
-		var lastActive = new Date(localStorage.getItem('lastActive'));
-		var tmp = $scope.theTime - lastActive;
-		tmp = Math.floor(((tmp/1000) - (tmp % 60))/60);
-		var totMin = tmp % 60;
-
-		if (localStorage.getItem('user') == null){
+			if (totMin > 10){
+				localStorage.clear();
+				$state.go('login');
+			};
+		}
+		if (!localStorage.user){
 			$state.go('login');
 		}
 
-		if (totMin > 10){
-			localStorage.clear();
-			$state.go('login');
-		};
-
+		$scope.theTime = new Date();
 		localStorage.setItem('lastActive', $scope.theTime);
 
 		$scope.time = function() {
@@ -64,9 +64,7 @@
 		$scope.logout = function() {
 			if (confirm("Are you sure?")) {
 				localStorage.clear();
-				// localStorage.rremoveItem('user');
-				// localStorage.removeItem('qrcode');
-				// localStorage.removeItem('satellizer_token');
+				location.reload();
 				$state.go('login');
 			}
 		}
