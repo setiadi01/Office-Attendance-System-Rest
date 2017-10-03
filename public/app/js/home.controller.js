@@ -19,8 +19,8 @@
 		if (!localStorage.user){
 			$state.go('login');
 		}
+
 		$scope.theTime = new Date();
-		
 		localStorage.setItem('lastActive', $scope.theTime);
 
 		$scope.time = function() {
@@ -53,7 +53,7 @@
 		$scope.tick = function() {
 			$scope.newSeconds = $scope.theTime.getSeconds().toString();
 			if ($scope.newSeconds == 0){
-				$scope.generateKey(	);
+				$scope.generateKey();
 			}
 			$scope.qrcode = localStorage.getItem('qrcode');
 			console.log($scope.qrcode);
@@ -64,11 +64,8 @@
 		$scope.logout = function() {
 			if (confirm("Are you sure?")) {
 				localStorage.clear();
-				// localStorage.rremoveItem('user');
-				// localStorage.removeItem('qrcode');
-				// localStorage.removeItem('satellizer_token');
-				$state.go('login');
 				location.reload();
+				$state.go('login');
 			}
 		}
 	}
