@@ -121,8 +121,13 @@ class ApiAuthTransaction
 
 		DB::table('at_attendance')
 			->where('user_id', $userId)
+<<<<<<< HEAD
 			->where('checkin_datetime', $now)
 			->update([	'checkout_datetime'	=> System::dateTime(),
+=======
+			->where('checkin_datetime', System::dateTime())
+			->update([	'checkout_datetime' 	=> System::dateTime(),
+>>>>>>> eac6ffafb9281c4fda6f285986d585bc7621bbba
 						'status' => 'O',
 						'update_datetime' 	=> System::dateTime(),
 						'version' => DB::raw('version + 1') ]);
