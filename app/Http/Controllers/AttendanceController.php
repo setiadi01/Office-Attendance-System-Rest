@@ -7,6 +7,7 @@ use App\System\System;
 use App\Transaction\GenerateQrCodeTransaction;
 use App\Transaction\ApiAuthTransaction;
 use App\Transaction\SystemTransaction;
+use App\Transaction\RecentLogActivityTransaction;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -20,6 +21,8 @@ class AttendanceController extends Controller
 	 * @return Json
 	 */
 	public function checkin(Request $request){
+        \Log::debug("checkin!");
+
 		$inputData  = $request->all();
 		$userId = System::userLoginId();
 		$username = System::userUsername();
@@ -32,6 +35,17 @@ class AttendanceController extends Controller
 			$checkin = $inputData['checkin'];
 
 			if ($resultQrCode == $checkin) {
+
+                $insertLog = [
+                    "userId" => $userId,
+                    "refId" => -99,
+                    "message" => 'You has successfully to check in',
+                    "type" => 'CHECKIN',
+                    "intRemark" => ''
+                ];
+
+                RecentLogActivityTransaction::generateLogActivity($insertLog);
+
 				$proccesCheckin = ApiAuthTransaction::checkin($userId, $checkin);
 				return response()->json([
 					'status' => 'OK'
@@ -39,20 +53,21 @@ class AttendanceController extends Controller
 			} else {
 				return response()->json([
 					'status' => 'FAIL',
-					'error' => 'QrCode Not Equals'
+					'error' => 'Failed to verify check in, please try using valid QrCode'
 				]);
 			}
 		}
 		else{
 			return response()->json([
 				'status' => 'FAIL',
-				'error' => 'UUID Not Found'
+				'error' => 'Failed to verify check in, please try using valid QrCode'
 			]);
 		}
 
 	}
 
 	public function checkout(Request $request){
+        \Log::debug("checkout!");
 		$inputData  = $request->all();
 		$userId = System::userLoginId();
 		$username = System::userUsername();
@@ -63,6 +78,16 @@ class AttendanceController extends Controller
 			$resultQrCode = md5($qrcode);
 			$checkout = $inputData['checkout'];
 			if ($resultQrCode == $checkout) {
+                $insertLog = [
+                    "userId" => $userId,
+                    "refId" => -99,
+                    "message" => 'You has successfully to check out',
+                    "type" => 'CHECKOUT',
+                    "intRemark" => ''
+                ];
+
+                RecentLogActivityTransaction::generateLogActivity($insertLog);
+
 				$proccesCheckout = ApiAuthTransaction::checkout($userId, $checkout);
 				return response()->json([
 					'status' => 'OK'
@@ -70,7 +95,7 @@ class AttendanceController extends Controller
 			} else {
 				return response()->json([
 					'status' => 'FAIL',
-					'error' => 'QrCode Not Equals'
+					'error' => 'Failed to verify check in, please try using valid QrCode'
 				]);
 			}
 		}
@@ -104,12 +129,10 @@ class AttendanceController extends Controller
 		$getReportList = ApiAuthTransaction::getReportList($input);
 		$getSummeryReport = ApiAuthTransaction::getSummaryReport($input);
 
-        \Log::debug($input);
-
 		return response()->json([
 			'status' => 'OK',
 			'reportList' => $getReportList['reportList'],
-			'notCheckIn' => $getSummeryReport['notCheckIn'],
+			'onTime' => $getSummeryReport['onTime'],
 			'checkIn' => $getSummeryReport['checkIn'],
 			'lateToCheckIn' => $getSummeryReport['lateToCheckIn'],
 			'workingHours' => $getSummeryReport['workingHours']
@@ -139,5 +162,22 @@ class AttendanceController extends Controller
 		]);
 
 	}
+
+    public function getSummaryChart(){
+        $userId = System::userLoginId();
+
+        $input =[
+            'userId' => $userId
+        ];
+
+
+        $getSummeryReport = ApiAuthTransaction::getSumaryForChartData($input);
+
+        return response()->json([
+            'status' => 'OK',
+            'summaryChartData' => $getSummeryReport['summaryChartData']
+        ]);
+
+    }
 
 }

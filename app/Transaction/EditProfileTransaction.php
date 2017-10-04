@@ -3,7 +3,6 @@
 namespace App\Transaction;
 
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Uuid;
 use App\System\System;
 
 /**

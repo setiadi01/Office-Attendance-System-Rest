@@ -24,14 +24,20 @@ class SystemTransaction
 	}
 
 	public static function getStatusAbsen($user_id){
-		$now = System::date();
-		$result = DB::table('at_attendance')
+		$notCheckout = DB::table('at_attendance')
 			->select('status')
 			->where('user_id', $user_id)
-			->where('checkin_datetime', $now)
+            ->where('checkin_datetime', '!=', '')
+            ->where('checkout_datetime', '')
 			->first();
 
-		return $result == null ? null : $result->status;
+        $checked = DB::select("SELECT status FROM at_attendance
+                                WHERE user_id = $user_id
+                                AND SUBSTRING (checkin_datetime, 1, 8) = to_char(current_date, 'YYYYMMDD')
+                                AND checkout_datetime != ''
+                              ");
+
+		return $notCheckout == null ? ($checked == null ? 'N' : 'Y') : $notCheckout->status;
 	}
 
     public static function getThisWeekMondayDate()

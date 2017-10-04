@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\System\System;
 use App\Transaction\ChangePasswordTransaction;
+use App\Transaction\RecentLogActivityTransaction;
 
 /**
  * @author  Cong, 27 September 2017
@@ -31,6 +32,16 @@ class ChangePasswordController extends Controller
         if($valPassword>0) {
 
             if (strlen($newPassword) >= 6) {
+
+                $insertLog = [
+                    "userId" => $userId,
+                    "refId" => -99,
+                    "message" => 'You has successfully to change password',
+                    "type" => 'CHANGE_PASSWORD',
+                    "intRemark" => ''
+                ];
+
+                RecentLogActivityTransaction::generateLogActivity($insertLog);
 
                 ChangePasswordTransaction::changePassword($input);
                 return response()->json([

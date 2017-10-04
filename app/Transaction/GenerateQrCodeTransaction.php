@@ -2,7 +2,6 @@
 
 namespace App\Transaction;
 
-use Ramsey\Uuid\Uuid;
 use DB;
 use App\System\System;
 

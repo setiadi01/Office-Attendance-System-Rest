@@ -104,30 +104,18 @@ class ApiAuthTransaction
 	}
 
 	public static function checkout($userId, $checkout){
-		$now = System::date();
 		DB::table('t_daily_authentication')
 					->where('user_id', $userId)
-					->where('generated_date', $now)
+					->where('auth_key_checkout', '')
 					->update([	'auth_key_checkout' 	=> $checkout,
 						'auth_date_checkout' => System::date(),
 						'update_datetime' 	=> System::dateTime(),
 						'version' => DB::raw('version + 1') ]);
 
-		$id = DB::table('t_daily_authentication')
-			->select('daily_authentication_id')
-			->where('user_id', $userId)
-			->where('generated_date', $now)
-			->first();
-
 		DB::table('at_attendance')
 			->where('user_id', $userId)
-<<<<<<< HEAD
-			->where('checkin_datetime', $now)
-			->update([	'checkout_datetime'	=> System::dateTime(),
-=======
-			->where('checkin_datetime', System::dateTime())
+			->where('checkout_datetime', '')
 			->update([	'checkout_datetime' 	=> System::dateTime(),
->>>>>>> eac6ffafb9281c4fda6f285986d585bc7621bbba
 						'status' => 'O',
 						'update_datetime' 	=> System::dateTime(),
 						'version' => DB::raw('version + 1') ]);
@@ -148,6 +136,8 @@ class ApiAuthTransaction
                                 FROM at_attendance A
                                 INNER JOIN t_user B ON A.user_id = B.user_id
                                 WHERE A.user_id = $userId 
+                                AND A.checkin_datetime !=''
+                                AND A.checkout_datetime !=''
                                 AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
                                 ORDER BY A.checkin_datetime DESC  
                                 limit $limit offset $offset
@@ -165,30 +155,35 @@ class ApiAuthTransaction
 		$endDate = $input['endDate'];
 		$userId = $input['userId'];
 
-		$notCheckIn  = DB::select("SELECT count(*) AS not_checkin FROM dt_date A
-                                    WHERE NOT EXISTS 
-                                        (SELECT 1 FROM at_attendance B 
-                                          WHERE A.string_date = SUBSTRING(B.checkin_datetime,1,8) 
-                                          AND B.user_id=$userId
-                                        )
-                                    AND A.string_date between '$startDate' AND '$endDate'
-						        ");
+        $onTime  = DB::select("SELECT count(*) AS on_time  FROM at_attendance A
+                                        WHERE A.user_id = $userId 
+                                        AND A.checkin_datetime !=''
+                                        AND A.checkout_datetime !=''
+                                        AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
+                                        AND SUBSTRING(A.checkin_datetime,9,4) <= '0820'
+								    ");
 
 		$checkIn  = DB::select("SELECT count(*) AS checkin FROM at_attendance A
                                   INNER JOIN t_daily_authentication B ON A.daily_authentication_id = B.daily_authentication_id
                                   WHERE B.user_id = $userId 
+                                  AND A.checkin_datetime !=''
+                                  AND A.checkout_datetime !=''
                                   AND B.auth_date_checkin BETWEEN '$startDate' AND '$endDate'
                               ");
 
 		$lateToCheckIn  = DB::select("SELECT count(*) AS late_to_checkin  FROM at_attendance A
                                         WHERE A.user_id = $userId 
+                                        AND A.checkin_datetime !=''
+                                        AND A.checkout_datetime !=''
                                         AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
                                         AND SUBSTRING(A.checkin_datetime,9,4) > '0820'
 								    ");
 
-		$workingHours  = DB::select("SELECT COALESCE(SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))), 0) AS working_hours		
+        $workingHours  = DB::select("SELECT COALESCE(SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))), 0) AS working_hours		
                                         FROM at_attendance A
                                         WHERE A.user_id = $userId
+                                        AND A.checkin_datetime !=''
+                                        AND A.checkout_datetime !=''
                                         AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
 							        ");
 
@@ -200,12 +195,47 @@ class ApiAuthTransaction
 
 		return [
 			"checkIn" => $checkIn[0]->checkin,
-			"notCheckIn" => $notCheckIn[0]->not_checkin,
+            "onTime" => $onTime[0]->on_time,
 			"lateToCheckIn" => $lateToCheckIn[0]->late_to_checkin,
 			"workingHours" => $workingHours[0]->working_hours,
 			"bestCheckIn" => $bestCheckIn[0]->best_checkin==''?'-':$bestCheckIn[0]->best_checkin
 		];
 
 	}
+
+    public static function getSumaryForChartData($input){
+        $userId = $input['userId'];
+
+        $list  = DB::select("
+                            WITH on_time_check_in AS (
+                                SELECT A.user_id, count(1) AS on_time, SUBSTRING(A.checkin_datetime,1,6) AS tahun_bulan  
+                                FROM at_attendance A
+                                WHERE A.user_id = $userId
+                                AND A.checkin_datetime !=''
+                                AND A.checkout_datetime !=''
+                                AND SUBSTRING(A.checkin_datetime,1,6) BETWEEN to_char(current_date - '3 month'::interval, 'YYYYMM') AND to_char(current_date - '1 month'::interval, 'YYYYMM')
+                                AND SUBSTRING(A.checkin_datetime,9,4) <= '0820'
+                                GROUP BY A.user_id, tahun_bulan
+                            ), late_check_in AS (
+                                SELECT A.user_id, count(1) AS late, SUBSTRING(A.checkin_datetime,1,6) AS tahun_bulan  
+                                FROM at_attendance A
+                                WHERE A.user_id = $userId
+                                AND A.checkin_datetime !=''
+                                AND A.checkout_datetime !=''
+                                AND SUBSTRING(A.checkin_datetime,1,6) BETWEEN to_char(current_date - '3 month'::interval, 'YYYYMM') AND to_char(current_date - '1 month'::interval, 'YYYYMM')
+                                AND SUBSTRING(A.checkin_datetime,9,4) > '0820'
+                                GROUP BY A.user_id, tahun_bulan
+                            )
+                            SELECT A.on_time, B.late, A.on_time+B.late total_check_in
+                            FROM on_time_check_in A
+                            INNER JOIN late_check_in B ON A.user_id = B.user_id AND A.tahun_bulan = B.tahun_bulan
+                            ");
+
+        return [
+            "summaryChartData" => $list
+        ];
+
+
+    }
 
 }

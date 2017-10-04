@@ -9,6 +9,7 @@ use App\User;
 use App\System\System;
 use App\Transaction\ApiAuthTransaction;
 use App\Transaction\EditProfileTransaction;
+use App\Transaction\SystemTransaction;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -28,7 +29,7 @@ class ApiAuthController extends Controller
     /**
      * Digunakan untuk absen API, ketika sukses akan mengembalikan response
      * yang berisi token dan data user yang sedang absen
-     * @param Request $request 
+     * @param Request $request
      * @return Json
      */
     public function login(Request $request){
@@ -37,6 +38,7 @@ class ApiAuthController extends Controller
             $role = System::defaultRole($user->user_id);
             $profilePicture = ApiAuthTransaction::getProfilePicture($user->username);
             $personProfile = EditProfileTransaction::getPersonProfile($user->user_id);
+            $getStatus = SystemTransaction::getStatusAbsen($user->user_id);
             $user->role = $role;
             $user->profile_picture = $profilePicture;
 
@@ -47,6 +49,7 @@ class ApiAuthController extends Controller
             $data['role'] = $user->role;
             $data['profile_picture'] = $user->profile_picture==null?'':$user->profile_picture;
             $data["phone_number"] = $personProfile->mobile_no;
+            $data["checkStatus"] = $getStatus;
 
             $token =  $user->createToken('Absensi')->accessToken;
             return response()->json([
