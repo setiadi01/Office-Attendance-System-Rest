@@ -21,10 +21,10 @@
 			$scope.loader = true;
 			$auth.login(ui.input)
 			.then(function(response) {
-				console.log(response);
 				if (response.data.status == 'OK') {
 					// localStorage.setItem('user', response.data.user.username);
 					localStorage.setItem('user', JSON.stringify(response.data.user));
+                    localStorage.setItem('userLogged', new Date());
 					$scope.loader = false;
 					$state.go('home');
 				}else{
@@ -33,7 +33,6 @@
 				}
 			})
 			.catch(function(response) {
-				console.log(response);
 				$scope.loader = false;
 				alert('Maaf, server sedang mengalami gangguan')
 			});

@@ -16,11 +16,12 @@ class SystemTransaction
 	public static function roleName($uer_id){
 		$result = DB::table('t_role_user as a')
 			->join('t_role as b', 'b.role_id', '=', 'a.role_id')
-			->select('b.name')
+			->select('b.display_name')
 			->where('a.flg_default', 'Y')
+            ->where('a.user_id', $uer_id)
 			->first();
 
-		return $result->name;
+		return $result->display_name;
 	}
 
 	public static function getStatusAbsen($user_id){
@@ -54,5 +55,14 @@ class SystemTransaction
             ->first();
 
         return $result->user_id;
+    }
+
+    public static function getUserByUsername($username){
+        $result = DB::table('t_user')
+            ->select('*')
+            ->where('username', $username)
+            ->first();
+
+        return $result;
     }
 }

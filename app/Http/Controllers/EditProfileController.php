@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\System\System;
 use App\Transaction\EditProfileTransaction;
 use App\Transaction\RecentLogActivityTransaction;
+use App\Transaction\SystemTransaction;
 
 /**
  * @author  Cong, 27 September 2017
@@ -36,12 +37,11 @@ class EditProfileController extends Controller
 
     public function checkUsername(Request $request){
 
-        $userId = System::userLoginId();
         $inputData  = $request->all();
+        $userId = SystemTransaction::getUserIdByUsername($inputData['username']);
 
-
-        $input["userId"] = $userId;
         $input["username"] = $inputData["username"];
+        $input["userId"] = $userId;
         $resultVal = EditProfileTransaction::valUsername($input);
         return response()->json([
             'status' => 'OK',
@@ -51,11 +51,11 @@ class EditProfileController extends Controller
 
     public function editProfile(Request $request){
         $inputData  = $request->all();
-        $userId = System::userLoginId();
+        $userId = SystemTransaction::getUserIdByUsername($inputData['currentUsername']);
 
         $input = [
             "userId" => $userId,
-            "username" => $inputData["username"],
+            "username" => $inputData["newUsername"],
             "fullName" => $inputData["fullName"]
         ];
         $resultVal = EditProfileTransaction::valUsername($input);

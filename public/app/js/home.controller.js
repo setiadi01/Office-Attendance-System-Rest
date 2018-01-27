@@ -5,23 +5,32 @@
 	.controller('HomeCtrl', HomeCtrl);
 
 	function HomeCtrl($scope, $auth, $state, $interval, $timeout, AbsensiService, dataModel){
-		if(localStorage.lastActive){
-			var lastActive = new Date(localStorage.getItem('lastActive'));
-			var tmp = $scope.theTime - lastActive;
-			tmp = Math.floor(((tmp/1000) - (tmp % 60))/60);
-			var totMin = tmp % 60;
 
-			if (totMin > 10){
-				localStorage.clear();
-				$state.go('login');
-			};
-		}
-		if (!localStorage.user){
-			$state.go('login');
+        $scope.theTime = new Date();
+
+		// check user logged, jika tidak ada atau sudah berbeda hari maka user harus login ulang
+		if(localStorage.userLogged) {
+            var userLogged = new Date(localStorage.getItem('userLogged'));
+            var userLoggedDate = userLogged.getDate();
+
+            if(userLoggedDate != $scope.theTime.getDate()) {
+                localStorage.clear();
+                $state.go('login');
+			}
+
+		} else {
+            localStorage.clear();
+            $state.go('login');
 		}
 
-		$scope.theTime = new Date();
-		localStorage.setItem('lastActive', $scope.theTime);
+        localStorage.setItem('lastActive', $scope.theTime);
+
+		// user must relogin after 10 minutes
+		var checkLastActive = function () {
+            localStorage.clear();
+            $state.go('login');
+        };
+        $timeout(checkLastActive, 600000);
 
 		$scope.time = function() {
 			$scope.theTime = new Date() // get the current time
@@ -39,7 +48,6 @@
 		AbsensiService.getQrCode(input)
 			.then(function(response){
 				if(response.data.status == 'OK'){
-					console.log(response);
 					$scope.code = response.data.data.toString();
 					localStorage.setItem('qrcode', $scope.code);
 				}
@@ -56,7 +64,6 @@
 				$scope.generateKey();
 			}
 			$scope.qrcode = localStorage.getItem('qrcode');
-			console.log($scope.qrcode);
 			$timeout($scope.tick,1000); // reset the barcode
 		}
 		$scope.tick();

@@ -106,6 +106,7 @@ class ApiAuthTransaction
 	public static function checkout($userId, $checkout){
 		DB::table('t_daily_authentication')
 					->where('user_id', $userId)
+                    ->where('auth_key_checkin', '!=', '')
 					->where('auth_key_checkout', '')
 					->update([	'auth_key_checkout' 	=> $checkout,
 						'auth_date_checkout' => System::date(),
@@ -160,7 +161,7 @@ class ApiAuthTransaction
                                         AND A.checkin_datetime !=''
                                         AND A.checkout_datetime !=''
                                         AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
-                                        AND SUBSTRING(A.checkin_datetime,9,4) <= '0820'
+                                        AND SUBSTRING(A.checkin_datetime,9,4) <= '0830'
 								    ");
 
 		$checkIn  = DB::select("SELECT count(*) AS checkin FROM at_attendance A
@@ -176,7 +177,7 @@ class ApiAuthTransaction
                                         AND A.checkin_datetime !=''
                                         AND A.checkout_datetime !=''
                                         AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
-                                        AND SUBSTRING(A.checkin_datetime,9,4) > '0820'
+                                        AND SUBSTRING(A.checkin_datetime,9,4) > '0830'
 								    ");
 
         $workingHours  = DB::select("SELECT COALESCE(SUM(EXTRACT(HOUR FROM to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'))), 0) AS working_hours		
@@ -213,8 +214,8 @@ class ApiAuthTransaction
                                 WHERE A.user_id = $userId
                                 AND A.checkin_datetime !=''
                                 AND A.checkout_datetime !=''
-                                AND SUBSTRING(A.checkin_datetime,1,6) BETWEEN to_char(current_date - '3 month'::interval, 'YYYYMM') AND to_char(current_date - '1 month'::interval, 'YYYYMM')
-                                AND SUBSTRING(A.checkin_datetime,9,4) <= '0820'
+                                AND SUBSTRING(A.checkin_datetime,1,6) BETWEEN to_char(current_date - '3 month'::interval, 'YYYYMM') AND to_char(current_date, 'YYYYMM')
+                                AND SUBSTRING(A.checkin_datetime,9,4) <= '0830'
                                 GROUP BY A.user_id, tahun_bulan
                             ), late_check_in AS (
                                 SELECT A.user_id, count(1) AS late, SUBSTRING(A.checkin_datetime,1,6) AS tahun_bulan  
@@ -222,13 +223,13 @@ class ApiAuthTransaction
                                 WHERE A.user_id = $userId
                                 AND A.checkin_datetime !=''
                                 AND A.checkout_datetime !=''
-                                AND SUBSTRING(A.checkin_datetime,1,6) BETWEEN to_char(current_date - '3 month'::interval, 'YYYYMM') AND to_char(current_date - '1 month'::interval, 'YYYYMM')
-                                AND SUBSTRING(A.checkin_datetime,9,4) > '0820'
+                                AND SUBSTRING(A.checkin_datetime,1,6) BETWEEN to_char(current_date - '3 month'::interval, 'YYYYMM') AND to_char(current_date, 'YYYYMM')
+                                AND SUBSTRING(A.checkin_datetime,9,4) > '0830'
                                 GROUP BY A.user_id, tahun_bulan
                             )
-                            SELECT A.on_time, B.late, A.on_time+B.late total_check_in
+                            SELECT A.on_time, COALESCE(B.late, 0) late, COALESCE(A.on_time+B.late,0) total_check_in
                             FROM on_time_check_in A
-                            INNER JOIN late_check_in B ON A.user_id = B.user_id AND A.tahun_bulan = B.tahun_bulan
+                            LEFT JOIN late_check_in B ON A.user_id = B.user_id AND A.tahun_bulan = B.tahun_bulan
                             ");
 
         return [

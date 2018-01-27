@@ -24,8 +24,8 @@ class AttendanceController extends Controller
         \Log::debug("checkin!");
 
 		$inputData  = $request->all();
-		$userId = System::userLoginId();
-		$username = System::userUsername();
+		$userId = SystemTransaction::getUserIdByUsername($inputData['username']);
+		$username = $inputData['username'];
 
 		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
 		if($getUuid != null) {
@@ -69,8 +69,8 @@ class AttendanceController extends Controller
 	public function checkout(Request $request){
         \Log::debug("checkout!");
 		$inputData  = $request->all();
-		$userId = System::userLoginId();
-		$username = System::userUsername();
+        $userId = SystemTransaction::getUserIdByUsername($inputData['username']);
+        $username = $inputData['username'];
 		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
 		if($getUuid != null) {
 			$now = System::dateTimeForQrCode();
@@ -102,7 +102,7 @@ class AttendanceController extends Controller
 		else{
 			return response()->json([
 				'status' => 'FAIL',
-				'error' => 'UUID Not Found'
+				'error' => 'Failed to verify check in, please try using valid QrCode'
 			]);
 		}
 	}
