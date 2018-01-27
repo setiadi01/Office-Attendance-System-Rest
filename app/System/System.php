@@ -44,5 +44,9 @@ class System
 	public static function defaultRole(){
 		return SystemTransaction::roleName(Auth::user()->user_id);
 	}
+
+    public static function currentVersion(){
+        return "BETA-0.0.2";
+    }
 	
 }

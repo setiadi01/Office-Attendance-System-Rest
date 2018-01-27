@@ -33,36 +33,46 @@ class ApiAuthController extends Controller
      * @return Json
      */
     public function login(Request $request){
-        if(Auth::attempt(['username' => request('username'), 'password' => request('password')])){
-            $user = Auth::user();
-            $role = System::defaultRole($user->user_id);
-            $profilePicture = ApiAuthTransaction::getProfilePicture($user->username);
-            $personProfile = EditProfileTransaction::getPersonProfile($user->user_id);
-            $getStatus = SystemTransaction::getStatusAbsen($user->user_id);
-            $user->role = $role;
-            $user->profile_picture = $profilePicture;
 
-            // mengembalikan data yang diperlukan saja
-            $data['username'] = $user->username;
-            $data['full_name'] = $user->full_name;
-            $data['email'] = $user->email;
-            $data['role'] = $user->role;
-            $data['profile_picture'] = $user->profile_picture==null?'':$user->profile_picture;
-            $data["phone_number"] = $personProfile->mobile_no;
-            $data["checkStatus"] = $getStatus;
+        if($request['versionApp']==null || $request['versionApp']!=System::currentVersion()) {
 
-            $token =  $user->createToken('Absensi')->accessToken;
             return response()->json([
-                'status' => 'OK', 
-                'token' => $token,
-                'user' => $data
+                'status' => 'REQUIRED_UPDATE',
+                'message' => 'Whats new :<br />A. Improvement :<br />- Perubahan jam masuk dari 08.20 menjadi 08.30 . Lebih dari 08.30 tercatat sebagai telat<br />- Perubahan default filter Report, menjadi 21 mon year - 20 mon year<br />- Perubahan informasi chart, menjadi 3 bulan sebelumnya sampai bulan sekarang<br />- Beberapa perbaikan di web absen<br /><br />B. Bug Fix :<br />- Bug fix tidak bisa checkin dihari selanjutnya<br />- Bug fix error data, untuk checkout dilain hari<br />- Bug fix foto profil tidak update saat ganti user<br />- Bug fix informasi role'
             ]);
-        }
-        else{
-            return response()->json([
-                'status' => 'FAIL', 
-                'error' => 'Unauthenticated'
-            ]);
+
+        } else {
+
+            if (Auth::attempt(['username' => request('username'), 'password' => request('password')])) {
+                $user = Auth::user();
+                $role = System::defaultRole($user->user_id);
+                $profilePicture = ApiAuthTransaction::getProfilePicture($user->username);
+                $personProfile = EditProfileTransaction::getPersonProfile($user->user_id);
+                $getStatus = SystemTransaction::getStatusAbsen($user->user_id);
+                $user->role = $role;
+                $user->profile_picture = $profilePicture;
+
+                // mengembalikan data yang diperlukan saja
+                $data['username'] = $user->username;
+                $data['full_name'] = $user->full_name;
+                $data['email'] = $user->email;
+                $data['role'] = $user->role;
+                $data['profile_picture'] = $user->profile_picture == null ? '' : $user->profile_picture;
+                $data["phone_number"] = $personProfile->mobile_no;
+                $data["checkStatus"] = $getStatus;
+
+                $token = $user->createToken('Absensi')->accessToken;
+                return response()->json([
+                    'status' => 'OK',
+                    'token' => $token,
+                    'user' => $data
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'FAIL',
+                    'error' => 'Unauthenticated'
+                ]);
+            }
         }
     }
 

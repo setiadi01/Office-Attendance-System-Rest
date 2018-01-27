@@ -21,49 +21,58 @@ class AttendanceController extends Controller
 	 * @return Json
 	 */
 	public function checkin(Request $request){
-        \Log::debug("checkin!");
+        if($request['versionApp']==null || $request['versionApp']!=System::currentVersion()) {
 
-		$inputData  = $request->all();
-		$userId = SystemTransaction::getUserIdByUsername($inputData['username']);
-		$username = $inputData['username'];
+            return response()->json([
+                'status' => 'REQUIRED_UPDATE',
+                'message' => 'Whats new :<br />A. Improvement :<br />- Perubahan jam masuk dari 08.20 menjadi 08.30 . Lebih dari 08.30 tercatat sebagai telat<br />- Perubahan default filter Report, menjadi 21 mon year - 20 mon year<br />- Perubahan informasi chart, menjadi 3 bulan sebelumnya sampai bulan sekarang<br />- Beberapa perbaikan di web absen<br /><br />B. Bug Fix :<br />- Bug fix tidak bisa checkin dihari selanjutnya<br />- Bug fix error data, untuk checkout dilain hari<br />- Bug fix foto profil tidak update saat ganti user<br />- Bug fix informasi role'
+            ]);
 
-		$getUuid = GenerateQrCodeTransaction::getUuid($userId);
-		if($getUuid != null) {
-			$now = System::dateTimeForQrCode();
-			$qrcode = $username.'_'.$now.'_'.$getUuid;
-			$resultQrCode = md5($qrcode);
-			$checkin = $inputData['checkin'];
+        } else {
 
-			if ($resultQrCode == $checkin) {
+            \Log::debug("checkin!");
 
-                $insertLog = [
-                    "userId" => $userId,
-                    "refId" => -99,
-                    "message" => 'You has successfully to check in',
-                    "type" => 'CHECKIN',
-                    "intRemark" => ''
-                ];
+            $inputData = $request->all();
+            $userId = SystemTransaction::getUserIdByUsername($inputData['username']);
+            $username = $inputData['username'];
 
-                RecentLogActivityTransaction::generateLogActivity($insertLog);
+            $getUuid = GenerateQrCodeTransaction::getUuid($userId);
+            if ($getUuid != null) {
+                $now = System::dateTimeForQrCode();
+                $qrcode = $username . '_' . $now . '_' . $getUuid;
+                $resultQrCode = md5($qrcode);
+                $checkin = $inputData['checkin'];
 
-				$proccesCheckin = ApiAuthTransaction::checkin($userId, $checkin);
-				return response()->json([
-					'status' => 'OK'
-				]);
-			} else {
-				return response()->json([
-					'status' => 'FAIL',
-					'error' => 'Failed to verify check in, please try using valid QrCode'
-				]);
-			}
-		}
-		else{
-			return response()->json([
-				'status' => 'FAIL',
-				'error' => 'Failed to verify check in, please try using valid QrCode'
-			]);
-		}
+                if ($resultQrCode == $checkin) {
 
+                    $insertLog = [
+                        "userId" => $userId,
+                        "refId" => -99,
+                        "message" => 'You has successfully to check in',
+                        "type" => 'CHECKIN',
+                        "intRemark" => ''
+                    ];
+
+                    RecentLogActivityTransaction::generateLogActivity($insertLog);
+
+                    $proccesCheckin = ApiAuthTransaction::checkin($userId, $checkin);
+                    return response()->json([
+                        'status' => 'OK'
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => 'FAIL',
+                        'error' => 'Failed to verify check in, please try using valid QrCode'
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'status' => 'FAIL',
+                    'error' => 'Failed to verify check in, please try using valid QrCode'
+                ]);
+            }
+
+        }
 	}
 
 	public function checkout(Request $request){
