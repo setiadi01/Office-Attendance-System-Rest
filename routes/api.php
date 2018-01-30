@@ -33,9 +33,10 @@ Route::group(['middleware' => ['auth:api']], function(){
     Route::get('check-username', 'EditProfileController@checkUsername');
     Route::get('get-report-absen', 'AttendanceController@getReportAbsen');
     Route::get('get-recent-activity', 'RecentActivityController@getRecentActivity');
-    Route::get('get-summary-weekly', 'AttendanceController@getSummaryWeekly');
+    Route::get('get-last-info-checkin', 'AttendanceController@getLastInfoCheckin');
     Route::get('get-summary-chart', 'AttendanceController@getSummaryChart');
-
+    Route::post('get-detail-checkin-list', 'DashboardController@getDetailCheckinList');
+    Route::post('get-summary-checkin-list', 'DashboardController@getSummaryCheckinList');
 
 
 });

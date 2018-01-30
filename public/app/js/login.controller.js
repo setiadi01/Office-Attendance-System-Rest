@@ -4,12 +4,16 @@
 	angular.module('absensiApp')
 	.controller('LoginCtrl', LoginCtrl);
 
-	function LoginCtrl($scope, $auth, $state, $interval){
+	function LoginCtrl($scope, $auth, $state, $interval, $window){
 		var ui = $scope;
 		$scope.loader = false;
 
 		if (localStorage.getItem('user') != null){
-			$state.go('home');
+			if(JSON.parse(localStorage.getItem('user')).role == 'admin') {
+				$window.location.href = '/dashboard/#/report';
+			} else {
+				$state.go('home');	
+			}
 		}
 
 		$scope.theTime = new Date();
@@ -26,7 +30,11 @@
 					localStorage.setItem('user', JSON.stringify(response.data.user));
                     localStorage.setItem('userLogged', new Date());
 					$scope.loader = false;
-					$state.go('home');
+					if(response.data.user.role == 'admin') {
+						$window.location.href = '/dashboard/#/report';
+					} else {
+						$state.go('home');	
+					}
 				}else{
 					$scope.loader = false;
 					alert('kombinasi password dan username salah')
