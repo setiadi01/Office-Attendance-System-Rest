@@ -336,11 +336,11 @@
 
 </script>
 <br />
-<div class="alert alert-danger" ng-show="!authorizePage">
-  <strong>Unauthorized!</strong> Maaf anda tidak berhak membuka halaman ini
+<div class="alert alert-danger" ng-show="!auth">
+  <strong>Unauthorized!</strong> Maaf anda tidak berhak membuka halaman ini. <a href="" ng-click="logout()">Back to home</a>
 </div>
-<p ng-show="authorizePage" style="font-weight: bold">Periode : {{startPeriod | date:'dd MMMM yyyy'}} - {{endPeriod | date:'dd MMMM yyyy'}}</p>
-<div ng-show="authorizePage" class="panel with-nav-tabs panel-primary filterable">
+<p ng-show="auth" style="font-weight: bold">Periode : {{startPeriod | date:'dd MMMM yyyy'}} - {{endPeriod | date:'dd MMMM yyyy'}}<a href="" ng-click="logout()" style="float: right">Back to home</a></p>
+<div ng-show="auth" class="panel with-nav-tabs panel-primary filterable">
     <div class="panel-heading">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#tab1primary" data-toggle="tab">Detail absensi</a></li>

@@ -1,43 +1,46 @@
-<div class="fixed-top-left">
-    <div class="col">
-        <div class="col-md-12 col-sm-12">
-            <h1>{{theTime | date:'HH:mm:ss'}}</h1>
-            {{theTime | date:'EEEE, dd MMMM'}}
+<div denied-page ng-show="!auth"></div>
+<div ng-show="auth">
+    <div class="fixed-top-left">
+        <div class="col">
+            <div class="col-md-12 col-sm-12">
+                <h1>{{theTime | date:'HH:mm:ss'}}</h1>
+                {{theTime | date:'EEEE, dd MMMM'}}
+            </div>
         </div>
     </div>
-</div>
-<div class="fixed-top-right">
-    <div class="col">
-        <div class="col-md-12 col-sm-12">
-            <a ng-click="logout()" class="btn btn-lg" title="Double Klik ">
-                <i class="glyphicon glyphicon-log-out" style="font-size: 2em"></i><br>
-                Logout
-            </a>
+    <div class="fixed-top-right">
+        <div class="col">
+            <div class="col-md-12 col-sm-12">
+                <a ng-click="logout()" class="btn btn-lg" title="Double Klik ">
+                    <i class="glyphicon glyphicon-log-out" style="font-size: 2em"></i><br>
+                    Logout
+                </a>
 
+            </div>
         </div>
     </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="middle-box text-center box-qrcode" >
-                <div>
-                    <h1 class="logo-name" style="color: #d4d4d4">
-                        SCAN ME
-                    </h1>
-                </div>
-                <hr>
-                <div style="background-color: white; color: black">
-                    <div style="padding: 5%" ng-show="qrcode === null">
-                        Loading ....
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="middle-box text-center box-qrcode" >
+                    <div>
+                        <h1 class="logo-name" style="color: #d4d4d4">
+                            SCAN ME
+                        </h1>
                     </div>
-                    <div style="padding: 5%" ng-show="qrcode != null">
-                        <qr text="qrcode" size="220"></qr>
+                    <hr>
+                    <div style="background-color: white; color: black">
+                        <div style="padding: 5%" ng-show="qrcode === null">
+                            Loading ....
+                        </div>
+                        <div style="padding: 5%" ng-show="qrcode != null">
+                            <qr text="qrcode" size="220"></qr>
+                        </div>
                     </div>
-                </div>
-                <hr>
-                <div style="color: #d4d4d4">
-                    <h3>{{fullname}}</h3>
+                    <hr>
+                    <div style="color: #d4d4d4">
+                        <h3>{{fullname}}</h3>
+                    </div>
                 </div>
             </div>
         </div>

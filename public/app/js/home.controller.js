@@ -4,7 +4,7 @@
 	angular.module('absensiApp')
 	.controller('HomeCtrl', HomeCtrl);
 
-	function HomeCtrl($scope, $auth, $state, $interval, $timeout, AbsensiService, dataModel){
+	function HomeCtrl($scope,$window, $auth, $state, $interval, $timeout, AbsensiService, dataModel){
 
         $scope.theTime = new Date();
 
@@ -15,12 +15,12 @@
 
             if(userLoggedDate != $scope.theTime.getDate()) {
                 localStorage.clear();
-                $state.go('login');
+                $window.location.href = '/';
 			}
 
 		} else {
             localStorage.clear();
-            $state.go('login');
+            $window.location.href = '/';
 		}
 
         localStorage.setItem('lastActive', $scope.theTime);
@@ -28,7 +28,7 @@
 		// user must relogin after 10 minutes
 		var checkLastActive = function () {
             localStorage.clear();
-            $state.go('login');
+            $window.location.href = '/';
         };
         $timeout(checkLastActive, 600000);
 
@@ -50,8 +50,12 @@
 				if(response.data.status == 'OK'){
 					$scope.code = response.data.data.toString();
 					localStorage.setItem('qrcode', $scope.code);
+                    $scope.auth = true;
+				} else if (response.data.status == 'unauthorized'){
+                    $scope.auth = false;
 				}
-			},function(){
+			},function(response){
+				console.log(response);
 				alert('Mohon maaf server sedang mengalami gangguan.');
 			});
 
@@ -60,7 +64,7 @@
 
 		$scope.tick = function() {
 			$scope.newSeconds = $scope.theTime.getSeconds().toString();
-			if ($scope.newSeconds == 0){
+			if ($scope.newSeconds == 0 && $scope.auth){
 				$scope.generateKey();
 			}
 			$scope.qrcode = localStorage.getItem('qrcode');
@@ -71,10 +75,13 @@
 		$scope.logout = function() {
 			if (confirm("Are you sure?")) {
 				localStorage.clear();
-				location.reload();
-				$state.go('login');
+                $window.location.href = '/';
 			}
 		}
+        $scope.goHome = function() {
+			localStorage.clear();
+            $window.location.href = '/';
+        }
 	}
 
 })();

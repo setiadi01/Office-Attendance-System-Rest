@@ -17,7 +17,7 @@ Route::post('login', 'Auth\ApiAuthController@login');
 Route::post('loginWeb', 'Auth\ApiAuthController@loginWeb');
 
 Route::get('get-profie-picture/{username}', 'Auth\ApiAuthController@getProfilePicture');
-Route::get('get-qrcode/{username}/{userId}', 'GenerateQrCodeController@getQrCode');
+Route::get('get-qrcode/{username}/{userId}', ["uses"=>"GenerateQrCodeController@getQrCode","middleware"=>"filter.ip"]);
 
 Route::get('images/{image}', 'FileController@loadImage');
 
@@ -25,6 +25,7 @@ Route::post('checkin', 'AttendanceController@checkin');
 Route::post('checkout', 'AttendanceController@checkout');
 Route::post('change-password', 'ChangePasswordController@changePassword');
 Route::post('edit-profile', 'EditProfileController@editProfile');
+Route::post('test', ["uses"=>"TestController@test","middleware"=>"filter.ip"]);
 
 Route::group(['middleware' => ['auth:api']], function(){
 

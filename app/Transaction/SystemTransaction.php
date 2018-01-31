@@ -65,4 +65,15 @@ class SystemTransaction
 
         return $result;
     }
+
+    public static function isThisIpCanHavePermission($ip, $rules){
+
+        $count  = DB::select("SELECT COUNT(1) as count
+                        FROM t_ip_filtering
+                        WHERE UPPER('$ip') LIKE UPPER('%'||ip_address||'%')
+                        AND rules = '$rules'
+                    ");
+
+        return ($count[0]->count !=null && $count[0]->count > 0) ? true : false;
+    }
 }

@@ -45,6 +45,10 @@ class System
 		return SystemTransaction::roleName(Auth::user()->user_id);
 	}
 
+    public static function ipHandler($ip, $rules){
+        return SystemTransaction::isThisIpCanHavePermission($ip, $rules);
+    }
+
 	public static function roleAdmin(){
 		return "admin";
 	}

@@ -3,6 +3,11 @@
 	'use strict'
 
 	angular.module('absensiApp', ['ui.router', 'satellizer', 'ja.qr'])
+	.directive('deniedPage', function() {
+		return {
+			templateUrl: 'app/html/denied-page.html'
+		};
+	})
 	.config(function($stateProvider, $urlRouterProvider, $authProvider){
 
 		$authProvider.loginUrl = '/api/loginWeb';
