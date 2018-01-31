@@ -10,8 +10,6 @@ class IpFiltering
 {
     public function handle($request, Closure $next)
     {
-
-        Log::debug($request->ip());
         if (!System::ipHandler($request->ip(), 'ALLOW')) {
             return response()->json([
                 'status' => 'unauthorized',
