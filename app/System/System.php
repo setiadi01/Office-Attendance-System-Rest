@@ -14,7 +14,6 @@ class System
 {
 	public static function userLoginId(){
 		return Auth::user()->user_id;
-		\Log.debug(Auth::user());
 	}
 
     public static function userUsername(){
@@ -41,6 +40,18 @@ class System
 		return date('Ymd', time());
 	}
 
+    public static function yearNow(){
+        return date('Y', time());
+    }
+
+    public static function monthNow(){
+        return date('m', time());
+    }
+
+    public static function dayNow(){
+        return date('d', time());
+    }
+
 	public static function defaultRole(){
 		return SystemTransaction::roleName(Auth::user()->user_id);
 	}
@@ -54,7 +65,7 @@ class System
 	}
 
     public static function currentVersion(){
-        return "BETA-0.0.2";
+        return "BETA-0.0.3";
     }
 	
 }

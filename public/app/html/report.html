@@ -363,6 +363,7 @@
                         <th><input type="text" class="form-control" placeholder="Jam Keluar" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Status Masuk" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Status Lembur" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Keterangan" disabled></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -373,6 +374,7 @@
                         <td>{{item.checkout}}</td>
                         <td>{{item.status_masuk=='N'?'Tidak':(item.status_masuk=='Y'?'Ya':'-')}}</td>
                         <td>{{item.status_lembur=='N'?'Tidak':(item.status_lembur=='Y'?'Ya':'-')}}</td>
+                        <td>{{item.description}}</td>
                     </tr>
                 </tbody>
               </table>
@@ -383,9 +385,12 @@
                 <thead>
                     <tr class="filters">
                         <th><input type="text" class="form-control" placeholder="Nama Lengkap" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Jumlah Masuk" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Jumlah Tidak Masuk" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Jumlah Lembur" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Masuk" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Tidak Masuk" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Lembur" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Dinas luar kota" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Dinas dalam kota" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Cuti" disabled></th>
                         <th><input type="text" class="form-control" placeholder="Total Hari Kerja" disabled></th>
                     </tr>
                 </thead>
@@ -395,6 +400,9 @@
                         <td>{{item.jumlah_masuk}}</td>
                         <td>{{item.jumlah_tidak_masuk}}</td>
                         <td>{{item.jumlah_lembur}}</td>
+                        <td>{{item.jumlah_dinas_luar}}</td>
+                        <td>{{item.jumlah_dinas_dalam}}</td>
+                        <td>{{item.jumlah_cuti}}</td>
                         <td>{{item.total_masuk}}</td>
                     </tr>
                 </tbody>
