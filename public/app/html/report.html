@@ -264,7 +264,7 @@
 .filterable .panel-heading .pull-right {
     margin-top: -40px;
 }
-.filterable .filters input[disabled] {
+.filterable .filtersDetail input[disabled], .filterable .filtersSummary input[disabled] {
     background-color: transparent;
     border: none;
     cursor: auto;
@@ -272,18 +272,21 @@
     padding: 0;
     height: auto;
 }
-.filterable .filters input[disabled]::-webkit-input-placeholder {
+.filterable .filtersDetail input[disabled]::-webkit-input-placeholder, .filterable .filtersSummary input[disabled]::-webkit-input-placeholder {
     color: #333;
 }
-.filterable .filters input[disabled]::-moz-placeholder {
+.filterable .filtersDetail input[disabled]::-moz-placeholder, .filterable .filtersSummary input[disabled]::-moz-placeholder {
     color: #333;
 }
-.filterable .filters input[disabled]:-ms-input-placeholder {
+.filterable .filtersDetail input[disabled]:-ms-input-placeholder, .filterable .filtersSummary input[disabled]::-moz-placeholder {
     color: #333;
 }
-.warning-list {
+.error-list {
     color: #fff;
     background: #f15b5b;
+}
+.warning-list {
+    background: #f1ff7e;
 }
 .next-day-list {
     background: whitesmoke;
@@ -292,21 +295,53 @@
 </style>
 <script type="text/javascript">
   $(document).ready(function(){
-    $('.filterable .btn-filter').click(function(){
-        var $panel = $(this).parents('.filterable'),
-        $filters = $panel.find('.filters input'),
-        $tbody = $panel.find('.table tbody');
-        if ($filters.prop('disabled') == true) {
-            $filters.prop('disabled', false);
-            $filters.first().focus();
-        } else {
-            $filters.val('').prop('disabled', true);
-            $tbody.find('.no-result').remove();
-            $tbody.find('tr').show();
-        }
-    });
+      $('#btnFilterTabSummary').hide();
+      $('#btnTabDetail').click(function(){
+          $('#btnFilterTabDetail').show();
+          $('#btnFilterTabSummary').hide();
+      });
 
-    $('.filterable .filters input').keyup(function(e){
+      $('#btnTabSummary').click(function(){
+          $('#btnFilterTabDetail').hide();
+          $('#btnFilterTabSummary').show();
+      });
+
+      var clicFilterFunction = function(param) {
+          var $panel = $('.filterable .'+param.btnClass).parents('.filterable'),
+              $filters = $panel.find('.'+param.filterClass+' input'),
+              $labels = $panel.find('.'+param.filterClass+' p.header-label'),
+              $tbody = $panel.find('.table tbody');
+          if ($filters.prop('disabled') == true) {
+              $filters.show();
+              $labels.hide();
+              $filters.prop('disabled', false);
+              $filters.first().focus();
+          } else {
+              $filters.hide();
+              $labels.show();
+              $filters.val('').prop('disabled', true);
+              $tbody.find('.no-result').remove();
+              $tbody.find('tr').show();
+          }
+      }
+
+      $('.filterable .btn-filter-detail').click(function(){
+          var param = {
+              btnClass : 'btn-filter-detail',
+              filterClass : 'filtersDetail'
+          }
+          clicFilterFunction(param);
+      });
+
+      $('.filterable .btn-filter-summary').click(function(){
+          var param = {
+              btnClass : 'btn-filter-summary',
+              filterClass : 'filtersSummary'
+          }
+          clicFilterFunction(param);
+      });
+
+    $('.filterable .filtersDetail input').keyup(function(e){
         /* Ignore tab key */
         var code = e.keyCode || e.which;
         if (code == '9') return;
@@ -314,7 +349,7 @@
         var $input = $(this),
         inputContent = $input.val().toLowerCase(),
         $panel = $input.parents('.filterable'),
-        column = $panel.find('.filters th').index($input.parents('th')),
+        column = $panel.find('.filtersDetail th').index($input.parents('th')),
         $table = $panel.find('.table'),
         $rows = $table.find('tbody tr');
         /* Dirtiest filter function ever ;) */
@@ -329,7 +364,7 @@
         $filteredRows.hide();
         /* Prepend no-result row if all rows are filtered */
         if ($filteredRows.length === $rows.length) {
-            $table.find('tbody').prepend($('<tr class="no-result text-center"><td colspan="'+ $table.find('.filters th').length +'">No result found</td></tr>'));
+            $table.find('tbody').prepend($('<tr class="no-result text-center"><td colspan="'+ $table.find('.filtersDetail th').length +'">No result found</td></tr>'));
         }
     });
 });
@@ -343,31 +378,39 @@
 <div ng-show="auth" class="panel with-nav-tabs panel-primary filterable">
     <div class="panel-heading">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="#tab1primary" data-toggle="tab">Detail absensi</a></li>
-                <li><a href="#tab2primary" data-toggle="tab">Summary absensi</a></li>
+                <li class="active"><a id="btnTabDetail" href="#tabDetail" data-toggle="tab">Detail absensi</a></li>
+                <li><a id="btnTabSummary" href="#tabSummary" data-toggle="tab">Summary absensi</a></li>
             </ul>
             <div class="pull-right">
-                <button class="btn btn-default btn-filter"><span class="glyphicon glyphicon-filter"></span> Filter</button>
+                <button id="btnFilterTabDetail" class="btn btn-default btn-filter-detail"><span class="glyphicon glyphicon-filter"></span> Filter</button>
+                <button id="btnFilterTabSummary" class="btn btn-default btn-filter-summary"><span class="glyphicon glyphicon-filter"></span> Filter</button>
             </div>
     </div>
     <div class="panel-body">
         <div class="tab-content">
-            <div class="tab-pane fade in active" id="tab1primary">
+            <div class="tab-pane fade in active" id="tabDetail">
               
               <table class="table">
                 <thead>
-                    <tr class="filters">
-                        <th><input type="text" class="form-control" placeholder="Nama Lengkap" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Tanggal" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Jam Masuk" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Jam Keluar" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Status Masuk" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Status Lembur" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Keterangan" disabled></th>
+                    <tr class="filtersDetail">
+                        <th><p class="header-label">Nama Lengkap</p>
+                            <input type="text" class="form-control" placeholder="Nama Lengkap" disabled style="display: none;"></th>
+                        <th><p class="header-label">Tanggal</p>
+                            <input type="text" class="form-control" placeholder="Tanggal" disabled style="display: none;"></th>
+                        <th><p class="header-label">Jam Masuk</p>
+                            <input type="text" class="form-control" placeholder="Jam Masuk" disabled style="display: none;"></th>
+                        <th><p class="header-label">Jam Keluar</p>
+                            <input type="text" class="form-control" placeholder="Jam Keluar" disabled style="display: none;"></th>
+                        <th><p class="header-label">Status Masuk</p>
+                            <input type="text" class="form-control" placeholder="Status Masuk" disabled style="display: none;"></th>
+                        <th><p class="header-label">Status Lembur</p>
+                            <input type="text" class="form-control" placeholder="Status Lembur" disabled style="display: none;"></th>
+                        <th><p class="header-label">Keterangan</p>
+                            <input type="text" class="form-control" placeholder="Keterangan" disabled style="display: none;"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="item in detailCheckinList" class="{{item.status_masuk=='N'?'warning-list':(item.status_masuk=='-' && item.status_lembur=='-'?'next-day-list':'')}}">
+                    <tr ng-repeat="item in detailCheckinList" class="{{item.status_masuk=='N'?(item.description!=''&&item.description!='-'?'warning-list':'error-list'):(item.status_masuk=='-' && item.status_lembur=='-'?'next-day-list':(item.description!=''&&item.description!='-'?'warning-list':''))}}">
                         <td>{{item.full_name}}</td>
                         <td>{{item.date}}</td>
                         <td>{{item.checkin}}</td>
@@ -380,29 +423,41 @@
               </table>
 
             </div>
-            <div class="tab-pane fade" id="tab2primary">
+            <div class="tab-pane fade" id="tabSummary">
               <table class="table">
                 <thead>
-                    <tr class="filters">
-                        <th><input type="text" class="form-control" placeholder="Nama Lengkap" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Masuk" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Tidak Masuk" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Lembur" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Dinas luar kota" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Dinas dalam kota" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Cuti" disabled></th>
-                        <th><input type="text" class="form-control" placeholder="Total Hari Kerja" disabled></th>
+                    <tr class="filtersSummary">
+                        <th><p class="header-label">Nama Lengkap</p>
+                            <input type="text" class="form-control" placeholder="Nama Lengkap" disabled style="display: none;">
+                        </th>
+                        <th><p>Masuk</p>
+                        </th>
+                        <th><p>Lembur</p>
+                        </th>
+                        <th><p>Dinas luar kota</p>
+                        </th>
+                        <th><p>Dinas dalam kota</p>
+                        </th>
+                        <th><p>Tidak Masuk Tanpa Keterangan</p>
+                        </th>
+                        <th><p>Cuti</p>
+                        </th>
+                        <th><p>Lupa Checkin</p>
+                        </th>
+                        <th><p>Total Hari Kerja</p>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="item in summaryCheckinList">
                         <td>{{item.full_name}}</td>
                         <td>{{item.jumlah_masuk}}</td>
-                        <td>{{item.jumlah_tidak_masuk}}</td>
                         <td>{{item.jumlah_lembur}}</td>
                         <td>{{item.jumlah_dinas_luar}}</td>
                         <td>{{item.jumlah_dinas_dalam}}</td>
+                        <td>{{item.jumlah_tidak_masuk}}</td>
                         <td>{{item.jumlah_cuti}}</td>
+                        <td>{{item.jumlah_lupa_checkin}}</td>
                         <td>{{item.total_masuk}}</td>
                     </tr>
                 </tbody>

@@ -56,7 +56,7 @@ class ReportWebTransaction
                                 COALESCE(D.reason_name, '-') AS description
                             FROM one_month_absen A
                             LEFT JOIN at_attendance B ON A.string_date = SUBSTRING(B.checkin_datetime, 1, 8) AND A.user_id = B.user_id
-                            LEFT JOIN t_manage_lost_checkin C ON A.string_date = C.checkin_date AND A.user_id = B.user_id
+                            LEFT JOIN t_manage_lost_checkin C ON A.string_date = C.checkin_date AND A.user_id = C.user_id
                             LEFT JOIN t_reason D ON C.reason_id = D.reason_id
                             WHERE (A.flg_holiday = 'N' OR (A.flg_holiday = 'Y' AND B.checkin_datetime IS NOT NULL))
                             ORDER BY A.string_date, A.full_name".$limit . $offset);
@@ -107,6 +107,10 @@ class ReportWebTransaction
                                 WHERE A.flg_holiday = 'N'
                                 AND A.string_date <= '$dateNow'
                                 AND (B.checkin_datetime IS NULL OR B.checkin_datetime = '')
+                                AND NOT EXISTS (
+                                    SELECT 1 FROM t_manage_lost_checkin AX WHERE A.user_id = AX.user_id
+                                    AND A.string_date = AX.checkin_date
+                                )
                                 GROUP BY A.user_id, A.full_name
                                 ORDER BY A.full_name
                             ), jumlah_lembur AS (
@@ -146,12 +150,22 @@ class ReportWebTransaction
                                 AND C.reason_code = 'C'
                                 GROUP BY A.user_id, A.full_name
                                 ORDER BY A.full_name
+                            ), jumlah_lupa_checkin AS (
+                                SELECT A.user_id, A.full_name, COUNT(1) AS jumlah_lupa_checkin
+                                FROM one_month_absen A
+                                INNER JOIN t_manage_lost_checkin B ON A.string_date = B.checkin_date AND A.user_id = B.user_id
+                                INNER JOIN t_reason C ON B.reason_id = C.reason_id
+                                WHERE A.string_date <= '$dateNow'
+                                AND C.reason_code = 'L'
+                                GROUP BY A.user_id, A.full_name
+                                ORDER BY A.full_name
                             )
 
-                            SELECT A.full_name, COALESCE(B.jumlah_masuk, 0) AS jumlah_masuk, COALESCE(C.jumlah_tidak_masuk, 0) AS jumlah_tidak_masuk, 
+                            SELECT A.full_name, COALESCE(B.jumlah_masuk, 0)+COALESCE(E.jumlah_dinas_luar, 0)+COALESCE(F.jumlah_dinas_dalam, 0) AS jumlah_masuk, COALESCE(C.jumlah_tidak_masuk, 0) AS jumlah_tidak_masuk, 
                             COALESCE(D.jumlah_lembur, 0) AS jumlah_lembur, COALESCE(E.jumlah_dinas_luar, 0) AS jumlah_dinas_luar, 
-COALESCE(F.jumlah_dinas_dalam, 0) AS jumlah_dinas_dalam, COALESCE(G.jumlah_cuti, 0) AS jumlah_cuti,
-COALESCE(E.jumlah_dinas_luar, 0)+COALESCE(F.jumlah_dinas_dalam, 0)+COALESCE(B.jumlah_masuk, 0)+COALESCE(D.jumlah_lembur, 0) AS total_masuk
+                            COALESCE(F.jumlah_dinas_dalam, 0) AS jumlah_dinas_dalam, COALESCE(G.jumlah_cuti, 0) AS jumlah_cuti,
+                            COALESCE(H.jumlah_lupa_checkin, 0) AS jumlah_lupa_checkin,
+                            COALESCE(E.jumlah_dinas_luar, 0)+COALESCE(F.jumlah_dinas_dalam, 0)+COALESCE(B.jumlah_masuk, 0)+COALESCE(D.jumlah_lembur, 0) AS total_masuk
                             FROM t_user A
                             LEFT JOIN jumlah_masuk B ON A.user_id = B.user_id
                             LEFT JOIN jumlah_tidak_masuk C ON A.user_id = C.user_id
@@ -159,6 +173,7 @@ COALESCE(E.jumlah_dinas_luar, 0)+COALESCE(F.jumlah_dinas_dalam, 0)+COALESCE(B.ju
                             LEFT JOIN jumlah_dinas_luar_kota E ON A.user_id = E.user_id 
                             LEFT JOIN jumlah_dinas_dalam_kota F ON A.user_id = F.user_id 
                             LEFT JOIN jumlah_cuti G ON A.user_id = G.user_id 
+                            LEFT JOIN jumlah_lupa_checkin H ON A.user_id = H.user_id 
                             WHERE A.user_id NOT IN (1,2,18)
                             ORDER BY B.full_name".$limit . $offset);
 
