@@ -158,6 +158,7 @@ class ApiAuthTransaction
                                     AND NOT EXISTS (SELECT 1 FROM at_attendance AX 
                                         WHERE B.string_date = SUBSTRING(AX.checkin_datetime,1,8) 
                                         AND AX.checkin_datetime !='' 
+	                                    AND AX.user_id = A.user_id
                                         )
                                     ORDER BY B.string_date DESC
                                 ) 
