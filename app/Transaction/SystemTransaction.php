@@ -25,6 +25,18 @@ class SystemTransaction
 	}
 
 	public static function getStatusAbsen($user_id){
+
+	    // UPDATE status menjadi O (checkout) apabila sudah berganti hari
+        DB::select(" UPDATE at_attendance A SET status = 'O',
+                  checkout_datetime = '-',
+                  update_datetime = to_char(current_timestamp, 'YYYYMMDDHH24MISS'),
+                  update_user_id = $user_id ,
+                  version = A.version+1
+                  WHERE A.user_id = $user_id
+                  AND to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD') < to_char(current_date, 'YYYYMMDD')
+                  AND checkout_datetime = ''
+                ");
+
 		$notCheckout = DB::table('at_attendance')
 			->select('status')
 			->where('user_id', $user_id)

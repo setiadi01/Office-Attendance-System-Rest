@@ -148,8 +148,8 @@ class ApiAuthTransaction
                                         to_char(B.string_date::date, 'FMDay') checkin_day, 
                                         to_char(B.string_date::date, 'DD') checkin_date, 
                                         to_char(B.string_date::date, 'FMMonth') checkin_month, 
-                                        '-' checkin_hours, 
-                                        '-' checkout_hours, 'N' AS check_status
+                                        'x' checkin_hours, 
+                                        'x' checkout_hours, 'N' AS check_status
                                     FROM t_user A, dt_date B
                                     WHERE B.string_date BETWEEN '$startDate' AND '$endDate'
                                     AND A.user_id = $userId
@@ -177,7 +177,10 @@ class ApiAuthTransaction
                                     to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'DD') checkin_date, 
                                     to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'FMMonth') checkin_month, 
                                     to_char(to_timestamp(A.checkin_datetime, 'YYYYMMDDHH24MISS'), 'HH24.MI') checkin_hours, 
-                                    to_char(to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS'), 'HH24.MI') checkout_hours, 
+                                    CASE WHEN A.checkout_datetime <> '-' 
+                                      THEN to_char(to_timestamp(A.checkout_datetime, 'YYYYMMDDHH24MISS'), 'HH24.MI') 
+                                      ELSE '-'
+                                    END AS checkout_hours, 
                                     'Y' AS check_status, '' AS reason_code, '' AS reason_name, '' AS description
                                     FROM at_attendance A
                                     INNER JOIN t_user B ON A.user_id = B.user_id
@@ -235,6 +238,7 @@ class ApiAuthTransaction
                                         WHERE A.user_id = $userId
                                         AND A.checkin_datetime !=''
                                         AND A.checkout_datetime !=''
+                                        AND A.checkout_datetime !='-'
                                         AND SUBSTRING(A.checkin_datetime,1,8) BETWEEN '$startDate' AND '$endDate'
 							        ");
 

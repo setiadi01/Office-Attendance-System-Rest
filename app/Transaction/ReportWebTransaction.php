@@ -38,7 +38,7 @@ class ReportWebTransaction
                                 CASE WHEN B.checkin_datetime IS NOT NULL
                                     THEN to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'HH24:MI:SS')
                                 ELSE '-' END AS checkin,
-                                CASE WHEN B.checkout_datetime IS NOT NULL and B.checkout_datetime != ''
+                                CASE WHEN B.checkout_datetime IS NOT NULL and B.checkout_datetime != '' and B.checkout_datetime != '-'
                                     THEN to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'HH24:MI:SS')
                                 ELSE '-' END AS checkout,
                                 CASE WHEN A.flg_holiday = 'N' AND B.checkin_datetime IS NULL AND A.string_date <= '$dateNow'
@@ -53,7 +53,11 @@ class ReportWebTransaction
                                 THEN '-'
                                 ELSE 'N'
                                 END AS status_lembur,
-                                COALESCE(D.reason_name, '-') AS description
+                                CASE WHEN (B.checkin_datetime IS NOT NULL AND B.checkin_datetime != '' AND B.checkin_datetime != '-' AND 
+                                            (B.checkout_datetime IS NULL OR B.checkout_datetime = '' OR B.checkout_datetime = '-'))
+                                    THEN 'Lupa checkout'
+                                    ELSE COALESCE(D.reason_name, '-') 
+                                END AS description
                             FROM one_month_absen A
                             LEFT JOIN at_attendance B ON A.string_date = SUBSTRING(B.checkin_datetime, 1, 8) AND A.user_id = B.user_id
                             LEFT JOIN t_manage_lost_checkin C ON A.string_date = C.checkin_date AND A.user_id = C.user_id
