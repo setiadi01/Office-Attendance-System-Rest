@@ -65,7 +65,7 @@ class System
 	}
 
     public static function currentVersion(){
-        return "BETA-0.0.3";
+        return "BETA-0.0.4";
     }
 	
 }

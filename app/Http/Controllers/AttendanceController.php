@@ -232,7 +232,7 @@ class AttendanceController extends Controller
         if($request['version']!=System::currentVersion()) {
             return response()->json([
                 'status' => 'REQUIRED_UPDATE',
-                'message' => 'Whats new :<br />A. Improvement :<br />- Perubahan jam masuk dari 08.20 menjadi 08.30 . Lebih dari 08.30 tercatat sebagai telat<br />- Perubahan default filter Report, menjadi 21 mon year - 20 mon year<br />- Perubahan informasi chart, menjadi 3 bulan sebelumnya sampai bulan sekarang<br />- Beberapa perbaikan di web absen<br /><br />B. Bug Fix :<br />- Bug fix tidak bisa checkin dihari selanjutnya<br />- Bug fix error data, untuk checkout dilain hari<br />- Bug fix foto profil tidak update saat ganti user<br />- Bug fix informasi role'
+                'message' => 'Whats new :<br />A. Improvement :<br />- Perubahan mekanisme checkout. Anda tidak dapat melakukan checkout setelah melewati tanggal checkin, tanggal akan terisi otomatis oleh system dengan "-" dengan keterangan "Lupa checkout"<br />- Perubahan pada report agar dapat menghandle Lupa checkout, termasuk menampilkan keterangan "Lupa checkout" (pada web admin)<br />- Perubahan port URL absen untuk security (Old Port will close soon)'
             ]);
         }
     }
