@@ -32,7 +32,7 @@
 
     </head>
     <body ng-app="absensiApp" class="body-login">
-        <div class="container">
+        <div class="container" style="width: 95%; padding-left: 0; padding-right: 0">
             <ui-view></ui-view>
         </div>
     </body>

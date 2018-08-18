@@ -65,11 +65,28 @@
         }
 
 		// user must relogin after 10 minutes
-		var checkLastActive = function () {
-            localStorage.clear();
-			$window.location.href = '/';
-        };
-        $timeout(checkLastActive, 600000);
+		// var checkLastActive = function () {
+        //     localStorage.clear();
+		// 	$window.location.href = '/';
+        // };
+        // $timeout(checkLastActive, 600000);
+
+        $scope.getTotal = function (amount1, amount2) {
+            return parseInt(amount1)+parseInt(amount2);
+        }
+
+        $scope.getGolongan = function (totalTelat, flgAbsenKosong, flgEscapeDenda) {
+
+            if(flgEscapeDenda=='N') {
+                if(flgAbsenKosong=='Y') return 'Golongan 4';
+                if(parseInt(totalTelat) <= 15) return 'Golongan 0';
+                if(parseInt(totalTelat) > 15 && parseInt(totalTelat) <= 30) return 'Golongan 1';
+                if(parseInt(totalTelat) > 30 && parseInt(totalTelat) <= 45) return 'Golongan 2';
+                if(parseInt(totalTelat) > 45 && parseInt(totalTelat) <= 60) return 'Golongan 3';
+                if(parseInt(totalTelat) > 60) return 'Golongan 4';
+            }
+            return '-';
+        }
 	}
 
 })();

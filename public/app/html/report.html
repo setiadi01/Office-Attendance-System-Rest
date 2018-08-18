@@ -432,6 +432,16 @@
                             <input type="text" class="form-control" placeholder="Status Masuk" disabled style="display: none;"></th>
                         <th><p class="header-label">Status Lembur</p>
                             <input type="text" class="form-control" placeholder="Status Lembur" disabled style="display: none;"></th>
+                        <th><p class="header-label">Absen Kosong</p>
+                            <input type="text" class="form-control" placeholder="Absen Kosong" disabled style="display: none;"></th>
+                        <th><p class="header-label">Telat ( Menit )</p>
+                            <input type="text" class="form-control" placeholder="Telat ( Menit )" disabled style="display: none;"></th>
+                        <th><p class="header-label">Jam Kurang ( Menit ) </p>
+                            <input type="text" class="form-control" placeholder="Jam Kurang ( Menit ) " disabled style="display: none;"></th>
+                        <th><p class="header-label">Telat + Jam Kurang ( Menit )</p>
+                            <input type="text" class="form-control" placeholder="Telat + Jam Kurang ( Menit )" disabled style="display: none;"></th>
+                        <th><p class="header-label">Golongan Denda</p>
+                            <input type="text" class="form-control" placeholder="Golongan Denda" disabled style="display: none;"></th>
                         <th><p class="header-label">Keterangan</p>
                             <input type="text" class="form-control" placeholder="Keterangan" disabled style="display: none;"></th>
                     </tr>
@@ -444,6 +454,11 @@
                         <td>{{item.checkout}}</td>
                         <td>{{item.status_masuk=='N'?'Tidak':(item.status_masuk=='Y'?'Ya':'-')}}</td>
                         <td>{{item.status_lembur=='N'?'Tidak':(item.status_lembur=='Y'?'Ya':'-')}}</td>
+                        <td>{{item.status_absen_kosong=='N'?'Tidak':(item.status_absen_kosong=='Y'?'Ya':'-')}}</td>
+                        <td>{{item.telat}}</td>
+                        <td>{{item.kurang}}</td>
+                        <td>{{(item.telat!='-' && item.kurang!='-')?getTotal(item.telat, item.kurang):'-'}}</td>
+                        <td>{{getGolongan(getTotal(item.telat, item.kurang), item.status_absen_kosong, item.escape_denda)}}</td>
                         <td>{{item.description}}</td>
                     </tr>
                 </tbody>

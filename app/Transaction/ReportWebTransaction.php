@@ -33,6 +33,7 @@ class ReportWebTransaction
                                 FROM t_user A, dt_date B
                                 WHERE B.string_date BETWEEN '$startDate' AND '$endDate'
                                 AND A.user_id NOT IN (1,2,18)
+	                            AND A.active = 'Y'
                             )
                             SELECT A.full_name, to_char(to_timestamp(A.string_date, 'YYYYMMDD'), 'FMDay, DD Mon YYYY') AS date, 
                                 CASE WHEN B.checkin_datetime IS NOT NULL
@@ -53,11 +54,47 @@ class ReportWebTransaction
                                 THEN '-'
                                 ELSE 'N'
                                 END AS status_lembur,
+                                CASE WHEN B.checkout_datetime IS NOT NULL and B.checkout_datetime != '' and B.checkout_datetime != '-' AND A.flg_holiday != 'Y'
+                                    THEN 'N'
+                                ELSE 
+                                    CASE WHEN A.string_date > '$dateNow' or  A.flg_holiday = 'Y'
+                                    THEN '-'
+                                    ELSE 'Y'
+                                    END
+                                END AS status_absen_kosong,
+                                CASE WHEN B.checkin_datetime IS NOT NULL AND A.flg_holiday != 'Y'
+                                    THEN 
+                                    CASE WHEN trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60) < 1
+                                        THEN 0::character varying
+                                        ELSE trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60)::character varying
+                                    END
+                                ELSE '-' END AS telat,
+                                CASE WHEN B.checkout_datetime IS NOT NULL and B.checkout_datetime != '' and B.checkout_datetime != '-' AND A.flg_holiday != 'Y'
+                                    THEN 
+                                    CASE WHEN to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'HH24MISS')::integer > 0830
+                                        THEN
+                                            CASE WHEN (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') )) / 60)-540)) < 1
+                                                THEN 0::character varying
+                                                ELSE (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') )) / 60)-540))::character varying
+                                            END
+                                        ELSE
+                                            CASE WHEN (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60)-540)) < 1
+                                                THEN 0::character varying
+                                                ELSE (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60)-540))::character varying
+                                            END
+                                    END
+                                ELSE 
+                                    CASE WHEN A.string_date > '$dateNow' OR A.flg_holiday = 'Y'
+                                    THEN '-'
+                                    ELSE '0'
+                                    END
+                                END AS kurang,
                                 CASE WHEN (B.checkin_datetime IS NOT NULL AND B.checkin_datetime != '' AND B.checkin_datetime != '-' AND 
                                             (B.checkout_datetime IS NULL OR B.checkout_datetime = '' OR B.checkout_datetime = '-'))
                                     THEN 'Lupa checkout'
                                     ELSE COALESCE(D.reason_name, '-') 
-                                END AS description
+                                END AS description,
+                                CASE WHEN COALESCE(D.reason_code, '') IN ('C','DL','DD') THEN 'Y' ELSE 'N' END AS escape_denda
                             FROM one_month_absen A
                             LEFT JOIN at_attendance B ON A.string_date = SUBSTRING(B.checkin_datetime, 1, 8) AND A.user_id = B.user_id
                             LEFT JOIN t_manage_lost_checkin C ON A.string_date = C.checkin_date AND A.user_id = C.user_id
