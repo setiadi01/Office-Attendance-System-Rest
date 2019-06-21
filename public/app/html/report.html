@@ -292,6 +292,35 @@
     background: whitesmoke;
 }
 
+  .nav-tabs{margin-bottom: 15px;}
+
+  /*-------------------AngularJS & jQuery UI Datepicker starts-----------------------------
+  .datepicker-container{position: relative;padding: 6px;float: left;border-radius: 2px;margin-bottom: 8px;}
+  .datepicker-container.ng-invalid-datepicked{background-color: #F8C4C4;border: 1px solid #C28080;}
+  .datepicker-container.ng-valid-datepicked{background-color: #DDFBCD;border: 1px solid #A6C297;}
+  .datepicker-container .plugin{position: absolute;z-index: 1;}
+  .datepicker-container .date-picked{color: #5D7A4E;}
+  .datepicker-container .calendar-icon:before{content: 'Pick Date';}
+  -------------------AngularJS & jQuery UI Datepicker ends-----------------------------*/
+
+  input[type=text]{
+      border-radius: 0px !important;
+  }
+  .ui-datepicker-trigger{
+      position: absolute;
+      margin-top: -28px;
+      right:15px;
+      border:none;
+      background-color:transparent;
+  }
+
+  .ng-valid{
+      border-left: 2px solid #090;
+  }
+  .ng-invalid{
+      border-left: 2px solid #900;
+  }
+
 </style>
 <script type="text/javascript">
   $(document).ready(function(){
@@ -401,7 +430,31 @@
 <div class="alert alert-danger" ng-show="!auth">
   <strong>Unauthorized!</strong> Maaf anda tidak berhak membuka halaman ini. <a href="" ng-click="logout()">Back to home</a>
 </div>
-<p ng-show="auth" style="font-weight: bold">Periode : {{startPeriod | date:'dd MMMM yyyy'}} - {{endPeriod | date:'dd MMMM yyyy'}}<a href="" ng-click="logout()" style="float: right">Back to home</a></p>
+<div class='form-group row'>
+    <div class='col-xs-3'>
+        <label>Period From</label>
+        <input type=text date-picker
+               placeholder='DD/MM/YYYY'
+               maxlength="10"
+               ng-required='true'
+               class='form-control'
+               ng-model='startPeriod'>
+    </div>
+    <div class='col-xs-3'>
+        <label>Period End</label>
+        <input type=text  date-picker
+               placeholder='DD/MM/YYYY'
+               maxlength="10"
+               ng-required='true'
+               class='form-control'
+               ng-model='endPeriod'>
+    </div>
+</div>
+<div class='form-group row'>
+    <div class='col-xs-3'>
+        <button class="btn btn-primary" ng-click="doSearch()" ng-disabled="disableBtnSearch"><span class="glyphicon {{disableBtnSearch ? 'glyphicon-refresh' : 'glyphicon-search'}}"></span> Search</button>
+    </div>
+</div>
 <div ng-show="auth" class="panel with-nav-tabs panel-primary filterable">
     <div class="panel-heading">
             <ul class="nav nav-tabs">
@@ -457,8 +510,8 @@
                         <td>{{item.status_absen_kosong=='N'?'Tidak':(item.status_absen_kosong=='Y'?'Ya':'-')}}</td>
                         <td>{{item.telat}}</td>
                         <td>{{item.kurang}}</td>
-                        <td>{{(item.telat!='-' && item.kurang!='-')?getTotal(item.telat, item.kurang):'-'}}</td>
-                        <td>{{getGolongan(getTotal(item.telat, item.kurang), item.status_absen_kosong, item.escape_denda)}}</td>
+                        <td>{{(item.telat!='-' && item.kurang!='-')?getTotal(item.telat, 0):'-'}}</td>
+                        <td>{{getGolongan(getTotal(item.telat, 0), item.status_absen_kosong, item.escape_denda)}}</td>
                         <td>{{item.description}}</td>
                     </tr>
                 </tbody>

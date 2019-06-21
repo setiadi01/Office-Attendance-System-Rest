@@ -24,40 +24,47 @@
         endPeriod.setDate(20);
         ui.endPeriod = endPeriod;
 
-        var filterStartPeriod = startPeriod.getFullYear().toString()+("0" + (startPeriod.getMonth() + 1)).slice(-2)+("0" + startPeriod.getDate()).slice(-2);
-        var filterEndPeriod = endPeriod.getFullYear().toString()+("0" + (endPeriod.getMonth() + 1)).slice(-2)+("0" + endPeriod.getDate()).slice(-2);
-
-        var input = {
-            start_date: filterStartPeriod,
-            end_date: filterEndPeriod,
-            limit: -99,
-            offset: -99
-        };
-
-        AbsensiService.getDetailCheckinService(input)
-            .then(function(response){
-                if(response.data.status == 'OK'){
-                    ui.detailCheckinList = response.data.response;
-                    ui.auth = true;
-                } else if(response.data.status == 'FAIL'){
+        ui.doSearch = function() {
+            ui.disableBtnSearch = true;
+            var input = {
+                start_date: moment(ui.startPeriod, 'DD/MM/YYYY').format('YYYYMMDD'),
+                end_date: moment(ui.endPeriod, 'DD/MM/YYYY').format('YYYYMMDD'),
+                limit: -99,
+                offset: -99
+            };
+            AbsensiService.getDetailCheckinService(input)
+                .then(function(response){
+                    if(response.data.status == 'OK'){
+                        ui.detailCheckinList = response.data.response;
+                        ui.auth = true;
+                        ui.disableBtnSearch = false;
+                    } else if(response.data.status == 'FAIL'){
+                        ui.auth = false;
+                        ui.disableBtnSearch = false;
+                    }
+                },function(response){
                     ui.auth = false;
-                }
-            },function(response){
-                ui.auth = false;
-                console.log(response);
-            });
+                    ui.disableBtnSearch = false;
+                    console.log(response);
+                });
 
-        AbsensiService.getSummaryCheckinService(input)
-            .then(function(response){
-                if(response.data.status == 'OK'){
-                    ui.summaryCheckinList = response.data.response;
-                } else if(response.data.status == 'FAIL'){
+            AbsensiService.getSummaryCheckinService(input)
+                .then(function(response){
+                    if(response.data.status == 'OK'){
+                        ui.summaryCheckinList = response.data.response;
+                        ui.disableBtnSearch = false;
+                    } else if(response.data.status == 'FAIL'){
+                        ui.disableBtnSearch = false;
+                    }
+                },function(response){
+                    ui.auth = false;
+                    ui.disableBtnSearch = false;
+                    console.log(response);
+                });
 
-                }
-            },function(response){
-                ui.auth = false;
-                console.log(response);
-            });
+        }
+
+        ui.doSearch();
 
         $scope.logout = function () {
             localStorage.clear();

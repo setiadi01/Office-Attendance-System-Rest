@@ -10,6 +10,9 @@ class ReportWebTransaction
 	
 	public static function getDetailCheckinList($input){
 
+	    $checkin_hour = env("CHECKIN_HOUR", "0830");
+//        $checkout_hour = env("CHECKOUT_HOUR", "1730");
+
         $dateNow = System::date();
         $startDate = $input['startDate'];
         $endDate = $input['endDate'];
@@ -64,23 +67,23 @@ class ReportWebTransaction
                                 END AS status_absen_kosong,
                                 CASE WHEN B.checkin_datetime IS NOT NULL AND A.flg_holiday != 'Y'
                                     THEN 
-                                    CASE WHEN trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60) < 1
+                                    CASE WHEN trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'{$checkin_hour}0000', 'YYYYMMDDHH24MISS') )) / 60) < 1
                                         THEN 0::character varying
-                                        ELSE trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60)::character varying
+                                        ELSE trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'{$checkin_hour}0000', 'YYYYMMDDHH24MISS') )) / 60)::character varying
                                     END
                                 ELSE '-' END AS telat,
                                 CASE WHEN B.checkout_datetime IS NOT NULL and B.checkout_datetime != '' and B.checkout_datetime != '-' AND A.flg_holiday != 'Y'
                                     THEN 
-                                    CASE WHEN to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'HH24MISS')::integer > 0830
+                                    CASE WHEN to_char(to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS'), 'HH24MISS')::integer > $checkin_hour
                                         THEN
                                             CASE WHEN (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') )) / 60)-540)) < 1
                                                 THEN 0::character varying
                                                 ELSE (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(B.checkin_datetime, 'YYYYMMDDHH24MISS') )) / 60)-540))::character varying
                                             END
                                         ELSE
-                                            CASE WHEN (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60)-540)) < 1
+                                            CASE WHEN (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'{$checkin_hour}0000', 'YYYYMMDDHH24MISS') )) / 60)-540)) < 1
                                                 THEN 0::character varying
-                                                ELSE (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'08300000', 'YYYYMMDDHH24MISS') )) / 60)-540))::character varying
+                                                ELSE (-(trunc (EXTRACT(EPOCH FROM ( to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS') - to_timestamp(to_char(to_timestamp(B.checkout_datetime, 'YYYYMMDDHH24MISS'), 'YYYYMMDD')||'{$checkin_hour}0000', 'YYYYMMDDHH24MISS') )) / 60)-540))::character varying
                                             END
                                     END
                                 ELSE 
