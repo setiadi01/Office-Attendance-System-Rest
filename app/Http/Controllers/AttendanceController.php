@@ -232,7 +232,7 @@ class AttendanceController extends Controller
         if($request['version']!=System::currentVersion()) {
             return response()->json([
                 'status' => 'REQUIRED_UPDATE',
-                'message' => 'Whats new :<br />A. Improvement :<br />- Perubahan mekanisme checkout. Anda tidak dapat melakukan checkout setelah melewati tanggal checkin, tanggal akan terisi otomatis oleh system dengan "-" dengan keterangan "Lupa checkout"<br />- Perubahan pada report agar dapat menghandle Lupa checkout, termasuk menampilkan keterangan "Lupa checkout" (pada web admin)<br />- Perubahan port URL absen untuk security (Old Port will close soon)'
+                'message' => 'Whats new :<br />- Perubahan port URL absen untuk security. Port lama akan di tutup secepatnya, menyebabkan tidak bisa login di aplikasi absen apabila tidak segera update'
             ]);
         }
     }
